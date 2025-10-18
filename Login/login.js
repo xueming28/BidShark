@@ -6,7 +6,6 @@ let users = {
 
     // DOM 元素
 const authForm = document.getElementById('authForm');
-const dashboard = document.getElementById('dashboard');
 const emailForm = document.getElementById('emailForm');
 const emailInput = document.getElementById('emailInput');
 const passwordInput = document.getElementById('passwordInput');
@@ -110,7 +109,7 @@ function showSuccess(message) {
             showError(emailInput, emailError);
         }
     });
-
+    
     // 密碼輸入驗證
     passwordInput.addEventListener('input', () => {
         hideError(passwordInput, passwordError);
@@ -194,17 +193,13 @@ function showSuccess(message) {
         currentUser = email;
         authForm.classList.remove('show');
         authForm.style.display = 'none';
-        dashboard.classList.add('show');
-        userEmail.textContent = email;
         alert("sucess login, redirecting to home page"); 
         window.location.href = "../HomePage/homePage.html";
-        //renderAuctionItems();
     }
 
     // 登出
     logoutBtn.addEventListener('click', () => {
         currentUser = null;
-        dashboard.classList.remove('show');
         authForm.style.display = 'block';
         emailInput.value = '';
         passwordInput.value = '';
@@ -213,17 +208,6 @@ function showSuccess(message) {
         hideError(passwordInput, passwordError);
         showSuccess('已成功登出！');
     });
-
-// 渲染拍賣商品
-/*function renderAuctionItems() {
-auctionList.innerHTML = auctionItems.map(item => `
-        <div class="auction-item">
-            <div class="auction-title">${item.title}</div>
-            <div class="auction-price">${item.price}</div>
-            <div class="auction-time">⏱ ${item.time}</div>
-        </div>
-    `).join('');
-} */
 
 // Terms of Service 連結
 document.getElementById('termsLink').addEventListener('click', (e) => {
