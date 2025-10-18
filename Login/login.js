@@ -24,7 +24,7 @@ const userEmail = document.getElementById('userEmail');
 const auctionList = document.getElementById('auctionList');
 const togglePassword = document.getElementById('togglePassword');
 
-
+//sidebar active item
 const navItems = document.querySelectorAll('.nav-item');
 navItems.forEach(item => {
     item.addEventListener('click', (e) => {
