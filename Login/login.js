@@ -1,6 +1,8 @@
 let isSignUpMode = true;
 let currentUser = null;
-let users = {}; // 模擬用戶資料庫
+let users = {
+    "test@gmail.com": { password: "123456" }
+}; // 模擬用戶資料庫
 
     // DOM 元素
 const authForm = document.getElementById('authForm');
@@ -23,36 +25,27 @@ const userEmail = document.getElementById('userEmail');
 const auctionList = document.getElementById('auctionList');
 const togglePassword = document.getElementById('togglePassword');
 
-// 模擬拍賣商品資料
-const auctionItems = [
-{ id: 1, title: 'iPhone 15 Pro Max', price: 'NT$ 35,000', time: '剩餘 2小時 30分鐘' },
-{ id: 2, title: 'MacBook Pro M3', price: 'NT$ 55,000', time: '剩餘 1小時 15分鐘' },
-{ id: 3, title: 'Sony PS5', price: 'NT$ 12,000', time: '剩餘 45分鐘' },
-{ id: 4, title: 'iPad Air 2024', price: 'NT$ 18,000', time: '剩餘 3小時 20分鐘' },
-{ id: 5, title: 'AirPods Pro', price: 'NT$ 6,500', time: '剩餘 1小時 50分鐘' }
-];
-
 // Email 驗證
 function validateEmail(email) {
-const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-return re.test(email);
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
 }
 
 // 密碼驗證
 function validatePassword(password) {
-return password.length >= 6;
+    return password.length >= 6;
 }
 
 // 顯示錯誤訊息
 function showError(element, errorElement) {
-element.classList.add('error');
-errorElement.classList.add('show');
+    element.classList.add('error');
+    errorElement.classList.add('show');
 }
 
 // 隱藏錯誤訊息
 function hideError(element, errorElement) {
-element.classList.remove('error');
-errorElement.classList.remove('show');
+    element.classList.remove('error');
+    errorElement.classList.remove('show');
 }
 
 // 顯示成功訊息
@@ -60,174 +53,176 @@ function showSuccess(message) {
     successMessage.textContent = message;
     successMessage.classList.add('show');
     setTimeout(() => {
-    successMessage.classList.remove('show');
-    }, 3000);
+        successMessage.classList.remove('show');
+        }, 3000);
     }
 
     // 切換註冊/登入模式
     toggleMode.addEventListener('click', () => {
-    isSignUpMode = !isSignUpMode;
+        isSignUpMode = !isSignUpMode;
 
-    if (isSignUpMode) {
-    formTitle.textContent = 'Create an account';
-    formSubtitle.textContent = 'Enter your email to sign up for this app';
-    submitBtn.textContent = 'Sign up with email';
-    toggleText.innerHTML = 'Already have an account? <a id="toggleMode">Sign in</a>';
-    } else {
-    formTitle.textContent = 'Welcome back';
-    formSubtitle.textContent = 'Enter your email to sign in to your account';
-    submitBtn.textContent = 'Sign in with email';
-    toggleText.innerHTML = "Don't have an account? <a id='toggleMode'>Sign up</a>";
-    }
+        if (isSignUpMode) {
+            formTitle.textContent = 'Create an account';
+            formSubtitle.textContent = 'Enter your email to sign up for this app';
+            submitBtn.textContent = 'Sign up with email';
+            toggleText.innerHTML = 'Already have an account? <a id="toggleMode">Sign in</a>';
+        } else {
+            formTitle.textContent = 'Welcome back';
+            formSubtitle.textContent = 'Enter your email to sign in to your account';
+            submitBtn.textContent = 'Sign in with email';
+            toggleText.innerHTML = "Don't have an account? <a id='toggleMode'>Sign up</a>";
+        }
 
-    passwordGroup.style.display = 'none';
-    emailInput.value = '';
-    passwordInput.value = '';
-    hideError(emailInput, emailError);
-    hideError(passwordInput, passwordError);
+        passwordGroup.style.display = 'none';
+        emailInput.value = '';
+        passwordInput.value = '';
+        hideError(emailInput, emailError);
+        hideError(passwordInput, passwordError);
 
-    // 重新綁定事件
-    document.getElementById('toggleMode').addEventListener('click', arguments.callee);
+        // 重新綁定事件
+        document.getElementById('toggleMode').addEventListener('click', arguments.callee);
     });
 
     // 密碼顯示/隱藏切換
     togglePassword.addEventListener('click', () => {
-    const type = passwordInput.type === 'password' ? 'text' : 'password';
-    passwordInput.type = type;
-    togglePassword.textContent = type === 'password' ? '顯示' : '隱藏';
+        const type = passwordInput.type === 'password' ? 'text' : 'password';
+        passwordInput.type = type;
+        togglePassword.textContent = type === 'password' ? '顯示' : '隱藏';
     });
 
     // Email 輸入驗證
     emailInput.addEventListener('input', () => {
-    hideError(emailInput, emailError);
+        hideError(emailInput, emailError);
     });
 
     emailInput.addEventListener('blur', () => {
-    if (emailInput.value && !validateEmail(emailInput.value)) {
-    showError(emailInput, emailError);
-    }
+        if (emailInput.value && !validateEmail(emailInput.value)) {
+            showError(emailInput, emailError);
+        }
     });
 
     // 密碼輸入驗證
     passwordInput.addEventListener('input', () => {
-    hideError(passwordInput, passwordError);
+        hideError(passwordInput, passwordError);
     });
 
     // 表單提交
     emailForm.addEventListener('submit', (e) => {
-    e.preventDefault();
+        e.preventDefault();
 
-    const email = emailInput.value.trim();
+        const email = emailInput.value.trim();
 
-    // 驗證 Email
-    if (!validateEmail(email)) {
-    showError(emailInput, emailError);
-    return;
-    }
+        // 驗證 Email
+        if (!validateEmail(email)) {
+            showError(emailInput, emailError);
+            return;
+        }
 
-    // 如果密碼欄位已顯示，驗證密碼
-    if (passwordGroup.style.display !== 'none') {
-    const password = passwordInput.value;
+        // 如果密碼欄位已顯示，驗證密碼
+        if (passwordGroup.style.display !== 'none') {
+            const password = passwordInput.value;
 
-    if (!validatePassword(password)) {
-    showError(passwordInput, passwordError);
-    return;
-    }
+            if (!validatePassword(password)) {
+                showError(passwordInput, passwordError);
+                return;
+            }
 
-    // 執行註冊或登入
-    if (isSignUpMode) {
-    // 註冊
-    if (users[email]) {
-    emailError.textContent = '此Email已被註冊';
-    showError(emailInput, emailError);
-    emailError.textContent = '請輸入有效的Email地址';
-    return;
-    }
+            // 執行註冊或登入
+            if (isSignUpMode) {
+            // 註冊
+                if (users[email]) {
+                    emailError.textContent = '此Email已被註冊';
+                    showError(emailInput, emailError);
+                    emailError.textContent = '請輸入有效的Email地址';
+                    return;
+                }
 
-    users[email] = { password: password };
-    showSuccess('註冊成功！正在登入...');
+                users[email] = { password: password };
+                showSuccess('註冊成功！正在登入...');
 
-    setTimeout(() => {
-    login(email);
-    }, 1500);
-    } else {
-    // 登入
-    if (!users[email]) {
-    emailError.textContent = '此Email尚未註冊';
-    showError(emailInput, emailError);
-    emailError.textContent = '請輸入有效的Email地址';
-    return;
-    }
+                setTimeout(() => {
+                    login(email);
+                }, 1500);
+            } else {
+                // 登入
+                if (!users[email]) {
+                    emailError.textContent = '此Email尚未註冊';
+                    showError(emailInput, emailError);
+                    emailError.textContent = '請輸入有效的Email地址';
+                    return;
+                }
 
-    if (users[email].password !== password) {
-    passwordError.textContent = '密碼錯誤';
-    showError(passwordInput, passwordError);
-    passwordError.textContent = '密碼至少需要6個字元';
-    return;
-    }
+                if (users[email].password !== password) {
+                    passwordError.textContent = '密碼錯誤';
+                    showError(passwordInput, passwordError);
+                    passwordError.textContent = '密碼至少需要6個字元';
+                    return;
+                }
 
-    showSuccess('登入成功！');
-    setTimeout(() => {
-    login(email);
-    }, 1000);
-    }
-    } else {
-    // 顯示密碼輸入欄位
-    passwordGroup.style.display = 'block';
-    passwordInput.focus();
-    }
+                showSuccess('登入成功！');
+                setTimeout(() => {
+                    login(email);
+                }, 1000);
+            }
+        } else {
+            // 顯示密碼輸入欄位
+            passwordGroup.style.display = 'block';
+            passwordInput.focus();
+        }
     });
 
     // Google 登入
     googleBtn.addEventListener('click', () => {
-    showSuccess('使用Google登入成功！');
-    setTimeout(() => {
-    login('google.user@gmail.com');
-    }, 1000);
+        showSuccess('使用Google登入成功！');
+        setTimeout(() => {
+            login('google.user@gmail.com');
+        }, 1000);
     });
 
     // 登入函數
     function login(email) {
-    currentUser = email;
-    authForm.classList.remove('show');
-    authForm.style.display = 'none';
-    dashboard.classList.add('show');
-    userEmail.textContent = email;
-    renderAuctionItems();
+        currentUser = email;
+        authForm.classList.remove('show');
+        authForm.style.display = 'none';
+        dashboard.classList.add('show');
+        userEmail.textContent = email;
+        alert("sucess login, redirecting to home page"); 
+        window.location.href = "../HomePage/homePage.html";
+        //renderAuctionItems();
     }
 
     // 登出
     logoutBtn.addEventListener('click', () => {
-    currentUser = null;
-    dashboard.classList.remove('show');
-    authForm.style.display = 'block';
-    emailInput.value = '';
-    passwordInput.value = '';
-    passwordGroup.style.display = 'none';
-    hideError(emailInput, emailError);
-    hideError(passwordInput, passwordError);
-    showSuccess('已成功登出！');
-});
+        currentUser = null;
+        dashboard.classList.remove('show');
+        authForm.style.display = 'block';
+        emailInput.value = '';
+        passwordInput.value = '';
+        passwordGroup.style.display = 'none';
+        hideError(emailInput, emailError);
+        hideError(passwordInput, passwordError);
+        showSuccess('已成功登出！');
+    });
 
 // 渲染拍賣商品
-function renderAuctionItems() {
+/*function renderAuctionItems() {
 auctionList.innerHTML = auctionItems.map(item => `
-            <div class="auction-item">
-                <div class="auction-title">${item.title}</div>
-                <div class="auction-price">${item.price}</div>
-                <div class="auction-time">⏱ ${item.time}</div>
-            </div>
-        `).join('');
-}
+        <div class="auction-item">
+            <div class="auction-title">${item.title}</div>
+            <div class="auction-price">${item.price}</div>
+            <div class="auction-time">⏱ ${item.time}</div>
+        </div>
+    `).join('');
+} */
 
 // Terms of Service 連結
 document.getElementById('termsLink').addEventListener('click', (e) => {
-e.preventDefault();
-alert('服務條款\n\n1. 用戶需年滿18歲\n2. 禁止拍賣違法物品\n3. 交易需遵守平台規範\n4. 保護個人資料安全');
+    e.preventDefault();
+    alert('服務條款\n\n1. 用戶需年滿18歲\n2. 禁止拍賣違法物品\n3. 交易需遵守平台規範\n4. 保護個人資料安全');
 });
 
 // Privacy Policy 連結
 document.getElementById('privacyLink').addEventListener('click', (e) => {
-e.preventDefault();
-alert('隱私政策\n\n我們重視您的隱私：\n1. 收集必要的個人資訊\n2. 不會出售用戶資料\n3. 使用加密技術保護資料\n4. 遵守相關法律規範');
+    e.preventDefault();
+    alert('隱私政策\n\n我們重視您的隱私：\n1. 收集必要的個人資訊\n2. 不會出售用戶資料\n3. 使用加密技術保護資料\n4. 遵守相關法律規範');
 });
