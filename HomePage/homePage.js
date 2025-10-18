@@ -20,7 +20,7 @@ navItems.forEach(item => {
 const itemCards = document.querySelectorAll('.item-card, .more-card');
 itemCards.forEach(card => {
     card.addEventListener('click', () => {
-        alert('商品詳情頁面開發中！');
+        window.location.href = '../AuctionItem/auction_item.html';
     });
 });
 function searchItems() {
