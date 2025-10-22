@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 120 120"
+     role="img"
+     aria-label="Default profile image"
+     width="120" height="120">
+  <title>Default profile image</title>
+
+  <!-- colors use CSS variables for easy theming -->
+  <defs>
+    <style>
+      .bg { fill: var(--avatar-bg, #E6EEF8); }
+      .shape { fill: var(--avatar-fg, #64748B); }
+    </style>
+  </defs>
+
+  <!-- background circle -->
+  <circle class="bg" cx="60" cy="60" r="58" />
+
+  <!-- shoulder -->
+  <path class="shape" d="M20 98c0-14 12.5-26 40-26s40 12 40 26H20z" />
+
+  <!-- head -->
+  <circle class="shape" cx="60" cy="44" r="20" />
+</svg>
