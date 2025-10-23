@@ -125,6 +125,10 @@ body {
     gap: 8px;
     transition: all 0.2s
 }
+.wrapper{
+    position: relative;
+    display: inline-block;
+}
 .filter-btn {
     padding: 8px 16px;
     border: 1px solid #e0e0e0;
@@ -141,7 +145,23 @@ body {
     border-color: #ccc;
     background: #fafafa;
 }
+.filter-content{
+    display: none;
+    position : absolute;
+    background: white;
+    border: 1px solid #e0e0e0;
+    min-width: 160px;
 
+}
+.filter-content.show {
+    display: block;
+}
+.filter-element{
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
 .search-btn {
     padding: 8px 20px;
     background: #000;
