@@ -403,7 +403,7 @@ document.querySelector('.filter-button').addEventListener('click', (e) => {
     document.querySelector('.filter-content').classList.toggle("show");
 })
 window.onclick = function(event) {
-    if (!event.target.closest('.filter-button')) {
+    if (!event.target.closest('.filter-button')&& !event.target.closest('.filter-content')) {
         var dropdowns = document.getElementsByClassName("filter-content");
         for (let i = 0; i < dropdowns.length; i++) {
             var openDropdown = dropdowns[i];

@@ -38,16 +38,12 @@ document.querySelector('.search-bar').addEventListener('keypress', (e) => {
         searchItems();
     }
 });
-// Filter 按鈕
-document.querySelector('.filter-btn').addEventListener('click', () => {
-    alert('篩選功能開發中！\n即將推出：\n- 價格範圍\n- 分類篩選\n- 結束時間\n- 商品狀態');
-});
 //filter dropdown
 document.querySelector('.filter-btn').addEventListener('click', (e) => {
     document.querySelector('.filter-content').classList.toggle("show");
 })
 window.onclick = function(event) {
-    if (!event.target.closest('.filter-btn')) {
+    if (!event.target.closest('.filter-btn')&& !event.target.closest('.filter-content')) {
         var dropdowns = document.getElementsByClassName("filter-content");
         for (let i = 0; i < dropdowns.length; i++) {
             var openDropdown = dropdowns[i];
