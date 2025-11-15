@@ -4,6 +4,21 @@ let users = {
     "test@gmail.com": { password: "123456" }
 }; // 模擬用戶資料庫
 
+fetch('sideBar.html')
+    .then(res => res.text())
+    .then(html => {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.innerHTML = html;
+        const links = sidebar.querySelectorAll('a.nav-item');
+        const currentPage = window.location.pathname.split('/').pop();
+        links.forEach(link => {
+            const linkPage = link.getAttribute('href');
+            if (linkPage === currentPage) {
+                link.classList.add('active');
+            }
+        });
+    });
+
     // DOM 元素
 const authForm = document.getElementById('authForm');
 const emailForm = document.getElementById('emailForm');
@@ -23,17 +38,6 @@ const logoutBtn = document.getElementById('logoutBtn');
 const userEmail = document.getElementById('userEmail');
 const auctionList = document.getElementById('auctionList');
 const togglePassword = document.getElementById('togglePassword');
-
-//sidebar active item
-const navItems = document.querySelectorAll('.nav-item');
-navItems.forEach(item => {
-    item.addEventListener('click', (e) => {
-        e.preventDefault();
-        navItems.forEach(i => i.classList.remove('active'));
-        item.classList.add('active');
-    });
-});
-
 // Email 驗證
 function validateEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
