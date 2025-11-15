@@ -1,12 +1,17 @@
-//sidebar active item
-const navItems = document.querySelectorAll('.nav-item');
-navItems.forEach(item => {
-    item.addEventListener('click', (e) => {
-        e.preventDefault();
-        navItems.forEach(i => i.classList.remove('active'));
-        item.classList.add('active');
+fetch('sideBar.html')
+    .then(res => res.text())
+    .then(html => {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.innerHTML = html;
+        const links = sidebar.querySelectorAll('a.nav-item');
+        const currentPage = window.location.pathname.split('/').pop();
+        links.forEach(link => {
+            const linkPage = link.getAttribute('href');
+            if (linkPage === currentPage) {
+                link.classList.add('active');
+            }
+        });
     });
-});
 document.querySelector('.filter-button').addEventListener('click', (e) => {
     document.querySelector('.filter-content').classList.toggle("show");
 })
