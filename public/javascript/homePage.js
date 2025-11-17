@@ -15,6 +15,23 @@ fetch('sideBar.html')
         sideBar.collapse();
     });
 
+(async () => {
+    const res = await fetch('api/info/session', {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" }
+    });
+    console.log("this works")
+    const data = await res.json();
+
+    if (data.isLoggedIn) {
+        const login = document.getElementById('login');
+        login.textContent = "Logout";
+        login.onclick = null;
+
+    }
+})();
+
 const tabs = document.querySelectorAll('.tab');
 tabs.forEach(tab => {
     tab.addEventListener('click', () => {

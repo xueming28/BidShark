@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import loginRouter from './userOperation';
+import sessionInfo from './getSessionInfo';
 
 const mainRouter = Router();
 
 
 mainRouter.use('/auth', loginRouter);
-// Now endpoints are:
-// POST /auth/login
-// POST /auth/signup
+mainRouter.use('/info', sessionInfo);
+
 
 export default mainRouter;
