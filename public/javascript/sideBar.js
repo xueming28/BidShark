@@ -1,4 +1,4 @@
-export function collapse(){
+export async function collapse(){
     document.getElementById("toggleSidebar").addEventListener('click', function () {
         if(document.querySelector(".sidebar").classList.contains('collapsed')) {
             document.querySelector(".sidebar").classList.remove('collapsed');
@@ -16,4 +16,15 @@ export function collapse(){
                 '</svg>';
         }
     })
+    //I am lazy so I a just putting it all in here
+    //account part only shows up when you are logged in
+    const res = await fetch('api/info/session', {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" }
+    });
+    const data = await res.json();
+    if (!data.isLoggedIn) {
+            document.getElementById("profile").classList.toggle("inactive");
+    }
 }

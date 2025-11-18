@@ -14,3 +14,14 @@ fetch('sideBar.html')
         });
         sideBar.collapse();
     });
+(async () => {
+    const res = await fetch('api/info/session', {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" }
+    });
+    const data = await res.json();
+    if (!data.isLoggedIn) {
+        window.location.href = '../homePage.html';
+    }
+})();

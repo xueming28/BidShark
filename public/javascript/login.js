@@ -17,9 +17,7 @@ fetch('sideBar.html')
 
 let isSignUpMode = true;
 let currentUser = null;
-let users = {
-    "test@gmail.com": { password: "123456" }
-}; // 模擬用戶資料庫
+
 
 // DOM 元素
 const authForm = document.getElementById('authForm');
