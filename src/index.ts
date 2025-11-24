@@ -4,7 +4,9 @@ import bodyParser from 'body-parser';
 import mainRouter from './Router';
 import session from "express-session";
 import MongoStore from "connect-mongo";
-import {client} from "./ConnectToDB"
+import {client} from "./ConnectToDB";
+
+
 const app = express();
 const PORT = 3000;
 

@@ -1,4 +1,5 @@
 import * as sideBar from './sideBar.js';
+
 fetch('sideBar.html')
     .then(res => res.text())
     .then(html => {
@@ -23,5 +24,15 @@ fetch('sideBar.html')
     const data = await res.json();
     if (!data.isLoggedIn) {
         window.location.href = '../homePage.html';
+    }else{
+        let img = data.image.replace(/\s/g, "");
+        if (img.startsWith("PHN")) {
+            document.getElementById("pic").src = "data:image/svg+xml;base64," + img;
+        }else{
+            document.getElementById("pic").src = "data:image/png;base64," + img;
+        }
+        document.getElementById("nameInput").placeholder = data.name;
+        document.getElementById("emailInput").placeholder = data.email;
+        document.getElementById("numInput").placeholder = data.phoneNumber || "Please enter a phone number" ;
     }
 })();

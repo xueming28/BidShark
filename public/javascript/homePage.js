@@ -27,11 +27,22 @@ fetch('sideBar.html')
     if (data.isLoggedIn) {
         const login = document.getElementById('login');
         login.textContent = "Logout";
-        login.onclick = null;
-
+        login.onclick = async() => {
+            let msg = await fetch('api/info/logout', {
+                method: "POST",
+                credentials: "include",
+                headers: {"Content-Type": "application/json"}
+            });
+            if(msg.ok) {
+                alert("Logging out")
+                location.reload();
+            }else{
+                let opt = await msg.json()
+                alert(opt.message)
+            }
+        }
     }
 })();
-
 const tabs = document.querySelectorAll('.tab');
 tabs.forEach(tab => {
     tab.addEventListener('click', () => {

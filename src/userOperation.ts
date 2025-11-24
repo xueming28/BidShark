@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { connectDB } from './ConnectToDB';
+import fs from 'fs';
 import bcrypt from 'bcrypt';
 const loginRouter = Router();
 loginRouter.post('/SignUp',async (req: Request, res: Response) => {
@@ -15,11 +16,21 @@ loginRouter.post('/SignUp',async (req: Request, res: Response) => {
             return res.status(409).json({ error: 'User already exists!' });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-        await users.insertOne({ email: email, password: hashedPassword, name: email.split("@")[0] });
-        req.session.user = {
+        const img = fs.readFileSync('../public/default-profile.svg', { encoding: 'base64' })
+        await users.insertOne({
             email: email,
+            password: hashedPassword,
             name: email.split("@")[0],
-            isLoggedIn: true
+            image:  img
+        });
+        const user = await users.findOne({ email });
+        req.session.user = {
+            id: user._id.toString(),
+            email: user.email,
+            name: user.name,
+            isLoggedIn: true,
+            image: user.image,
+            phoneNumber: user.phone || null
         };
         return res.status(201).json({ status: 'success', message: 'User created' });
     } catch (err) {
@@ -43,9 +54,12 @@ loginRouter.post('/login', async (req: Request, res: Response) => {
         const match = await bcrypt.compare(password, user.password);
         if (match) {
             req.session.user = {
+                id: user._id.toString(),
                 email: email,
                 name: user.name,
-                isLoggedIn: true
+                isLoggedIn: true,
+                image: user.image,
+                phoneNumber: user.phone || null
             };
             return res.status(201).json({ status: 'success', message: 'Logged in successfully!' });
         }else{
