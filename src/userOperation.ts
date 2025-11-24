@@ -1,7 +1,10 @@
-import { Router, Request, Response } from 'express';
-import { connectDB } from './ConnectToDB';
+import type { Request, Response } from 'express';
+import expressPkg from 'express';
+import { connectDB } from './ConnectToDB.ts';
 import fs from 'fs';
 import bcrypt from 'bcrypt';
+
+const { Router } = expressPkg;
 const loginRouter = Router();
 loginRouter.post('/SignUp',async (req: Request, res: Response) => {
     try {

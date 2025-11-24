@@ -1,5 +1,8 @@
-import { Router, Request, Response } from 'express';
+import type { Request, Response } from 'express';
+import expressPkg from 'express';
 
+const { Router } = expressPkg;
+const loginRouter = Router();
 const sessionInfo = Router();
 
 sessionInfo.post('/session', async (req: Request, res: Response) => {

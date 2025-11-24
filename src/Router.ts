@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import loginRouter from './userOperation';
-import sessionInfo from './getSessionInfo';
+import loginRouter from './userOperation.ts';
+import sessionInfo from './getSessionInfo.ts';
 
 const mainRouter = Router();
 
