@@ -54,7 +54,7 @@ tabs.forEach(tab => {
 const itemCards = document.querySelectorAll('.item-card, .more-card');
 itemCards.forEach(card => {
     card.addEventListener('click', () => {
-        window.location.href = '../AuctionItem/auction_item.html';
+        window.location.href = 'auction_item.html';
     });
 });
 function searchItems() {
