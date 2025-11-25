@@ -11,12 +11,12 @@
     z-index: 1000
 }
 .sidebar.collapsed {
-    width: 60px;
+    width: 2vw;
 }
 .toggle-btn {
     position: fixed;
-    right: 1300px;
-    bottom: 20px;
+    left: 1vw;
+    bottom: 1vw;
     background: white;
     cursor: pointer;
     border: none;
@@ -28,8 +28,8 @@
     height: 35px;
 }
 .toggle-btn.collapsed {
-    right: 1480px;
-    bottom: 20px;
+    left: 3vw;
+    bottom: 1vw;
 }
 .everything.collapsed{
     display: none;
