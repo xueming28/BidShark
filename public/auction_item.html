@@ -1,46 +1,45 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>拍賣詳情頁 - 海大拍賣系統</title>
+  <title>拍賣詳情 - 海大拍賣系統</title>
   <link rel="stylesheet" href="css/auction_item.css" />
+  <style>
+    .image-gallery { display: flex; gap: 10px; margin-top:10px; flex-wrap: wrap; }
+    .thumb { width:80px; height:80px; object-fit:cover; border-radius:8px; cursor:pointer; opacity:0.7; transition:0.3s; }
+    .thumb.active { opacity:1; border:3px solid #007bff; }
+    .item-image img { width:100%; max-height:500px; object-fit:contain; border-radius:12px; }
+  </style>
 </head>
 <body>
   <div class="container">
-    <!-- 側邊欄 -->
     <div id="sidebar"></div>
-    <!-- 主要內容區 -->
     <main class="content">
       <div class="item-detail">
+        <!-- 圖片區 -->
         <div class="item-image">
-          <img src="./Image/Book.png" alt="Item Image">
+          <img id="mainImage" src="" alt="Item Image">
+          <div class="image-gallery" id="gallery"></div>
         </div>
 
+        <!-- 資訊區 -->
         <div class="item-info">
-          <h2>A Book</h2>
-          <!-- 商品描述 -->
-          <div class="item-description">
-            <p>
-              This is a second-hand book in good condition. The pages are slightly yellowed
-              but intact, and the cover shows minor wear. Perfect for collectors or readers
-              who enjoy classic literature.
-            </p>
-          </div>
+          <h2 id="itemTitle">Loading...</h2>
+          <div class="item-description"><p id="itemDesc">Loading...</p></div>
 
-          <!-- 資訊卡 -->
           <div class="info-grid">
             <div class="info-box">
               <div class="info-label">Seller</div>
-              <div class="info-value">SellerName</div>
+              <div class="info-value" id="sellerName">-</div>
             </div>
             <div class="info-box">
               <div class="info-label">Start Bid</div>
-              <div class="info-value" id="startBid">$100</div>
+              <div class="info-value" id="startBid">NT$0</div>
             </div>
             <div class="info-box">
               <div class="info-label">Highest Bid</div>
-              <div class="info-value" id="highestBid">$110</div>
+              <div class="info-value" id="highestBid" style="font-weight:bold; color:#e63946;">NT$0</div>
             </div>
             <div class="info-box">
               <div class="info-label">Time Remaining</div>
@@ -49,7 +48,7 @@
           </div>
 
           <div class="bid-section">
-            <input type="number" id="bidAmount" value="110" min="100">
+            <input type="number" id="bidAmount" placeholder="輸入出價" min="1" step="10">
             <button id="placeBidBtn">Place Bid</button>
           </div>
 

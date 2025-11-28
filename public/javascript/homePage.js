@@ -1,89 +1,172 @@
 import * as sideBar from './sideBar.js';
+
+// 載入側邊欄
 fetch('sideBar.html')
     .then(res => res.text())
     .then(html => {
         const sidebar = document.getElementById('sidebar');
-        sidebar.innerHTML = html;
-        const links = sidebar.querySelectorAll('a.nav-item');
-        const currentPage = window.location.pathname.split('/').pop();
-        links.forEach(link => {
-            const linkPage = link.getAttribute('href');
-            if (linkPage === currentPage) {
-                link.classList.add('active');
-            }
-        });
-        sideBar.collapse();
-    });
-
-(async () => {
-    const res = await fetch('api/info/session', {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" }
-    });
-    console.log("this works")
-    const data = await res.json();
-
-    if (data.isLoggedIn) {
-        const login = document.getElementById('login');
-        login.textContent = "Logout";
-        login.onclick = async() => {
-            let msg = await fetch('api/info/logout', {
-                method: "POST",
-                credentials: "include",
-                headers: {"Content-Type": "application/json"}
+        if (sidebar) {
+            sidebar.innerHTML = html;
+            const links = sidebar.querySelectorAll('a.nav-item');
+            const currentPage = location.pathname.split('/').pop() || 'homePage.html';
+            links.forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                }
             });
-            if(msg.ok) {
-                alert("Logging out")
-                location.reload();
-            }else{
-                let opt = await msg.json()
-                alert(opt.message)
-            }
+            sideBar.collapse();
         }
+    });
+
+// 檢查登入狀態
+(async () => {
+    try {
+        const res = await fetch('/api/info/session', {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" }
+        });
+        const data = await res.json();
+
+        if (data.isLoggedIn) {
+            const loginBtn = document.getElementById('login');
+            loginBtn.textContent = "Logout";
+            loginBtn.onclick = async () => {
+                const logoutRes = await fetch('/api/info/logout', {
+                    method: "POST",
+                    credentials: "include"
+                });
+                if (logoutRes.ok) {
+                    alert("Logged out successfully");
+                    location.reload();
+                } else {
+                    const msg = await logoutRes.json();
+                    alert(msg.message || "Logout failed");
+                }
+            };
+        }
+    } catch (err) {
+        console.error("Session check failed:", err);
     }
 })();
-const tabs = document.querySelectorAll('.tab');
-tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-    });
-});
-// 商品卡片點擊
-const itemCards = document.querySelectorAll('.item-card, .more-card');
-itemCards.forEach(card => {
-    card.addEventListener('click', () => {
-        window.location.href = 'auction_item.html';
-    });
-});
-function searchItems() {
-    const searchQuery = document.querySelector('.search-bar').value.trim();
-    if (searchQuery) {
-        alert(`搜尋功能開發中！\n您搜尋的是：${searchQuery}`);
+
+// 防止 XSS
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+//載入所有拍賣品
+async function loadAuctionItems() {
+    try {
+        const res = await fetch('/api/data/auctions');
+        const result = await res.json();
+
+        if (!result.success || !result.items) {
+            console.error('Failed to load auctions:', result);
+            return;
+        }
+
+        let items = result.items;
+
+        const recommendedGrid = document.querySelector('.recommended-grid');
+        const moreGrid = document.querySelector('.more-grid');
+
+        recommendedGrid.innerHTML = '';
+        moreGrid.innerHTML = '';
+
+        //Recommended 區塊 → 取「即將結束」的 5 件（剩餘時間最短）
+        const endingSoon = [...items]
+            .sort((a, b) => new Date(a.endTime) - new Date(b.endTime)) // 升冪：最早結束的在前
+            .slice(0, 5);
+
+        //More 區塊 → 所有商品，按「最新發布時間」最新在前
+        const allByLatest = [...items]
+            .sort((a, b) => new Date(b.createdAt || b.endTime) - new Date(a.createdAt || a.endTime));
+
+        // 渲染 Recommended（即將結束）
+        endingSoon.forEach(item => {
+            const cardHTML = `
+                <div class="item-card" data-id="${item._id}">
+                    <div class="item-image" style="background-image: url('${item.image || '/Image/default-item.jpg'}'); background-size: cover; background-position: center;"></div>
+                    <div class="item-info">
+                        <div class="item-name">${escapeHtml(item.title)}</div>
+                        <div class="item-description">Current Bid</div>
+                        <div class="item-footer">
+                            <div class="item-price">NT$${item.price}</div>
+                            <div class="item-time ending-soon">${item.timeLeft}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            recommendedGrid.insertAdjacentHTML('beforeend', cardHTML);
+        });
+
+        // 渲染 More 區（最新發布）
+        allByLatest.forEach(item => {
+            const smallCardHTML = `
+                <div class="more-card" data-id="${item._id}">
+                    <div class="more-image" style="background-image: url('${item.image || '/Image/default-item.jpg'}'); background-size: cover; background-position: center;"></div>
+                    <div class="more-info">
+                        <div class="more-name">${escapeHtml(item.title)}</div>
+                        <div class="more-footer">
+                            <div class="more-price">NT$${item.price}</div>
+                            <div class="more-time">${item.timeLeft}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            moreGrid.insertAdjacentHTML('beforeend', smallCardHTML);
+        });
+
+        // 點擊卡片跳轉到詳情頁
+        document.querySelectorAll('.item-card, .more-card').forEach(card => {
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', () => {
+                const id = card.dataset.id;
+                window.location.href = `auction_item.html?id=${id}`;
+            });
+        });
+
+    } catch (err) {
+        console.error('Error loading auction items:', err);
     }
 }
-// Search 按鈕
-document.querySelector('.search-btn').addEventListener('click', () => {
-    searchItems();
-});
-document.querySelector('.search-bar').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        searchItems();
-    }
-});
-//filter dropdown
-document.querySelector('.filter-btn').addEventListener('click', (e) => {
-    document.querySelector('.filter-content').classList.toggle("show");
-})
-window.onclick = function(event) {
-    if (!event.target.closest('.filter-btn')&& !event.target.closest('.filter-content')) {
-        var dropdowns = document.getElementsByClassName("filter-content");
-        for (let i = 0; i < dropdowns.length; i++) {
-            var openDropdown = dropdowns[i];
-            if (openDropdown.classList.contains('show')) {
-                openDropdown.classList.remove('show');
-            }
+
+// 頁面載入完成後執行
+document.addEventListener('DOMContentLoaded', () => {
+    loadAuctionItems();
+
+    // Tab 切換
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+        });
+    });
+
+    // 搜尋功能
+    const search = () => {
+        const query = document.querySelector('.search-bar')?.value.trim();
+        if (query) {
+            alert(`Search feature under development!\nKeyword: ${query}`);
         }
-    }
-};
+    };
+    document.querySelector('.search-btn')?.addEventListener('click', search);
+    document.querySelector('.search-bar')?.addEventListener('keypress', e => {
+        if (e.key === 'Enter') search();
+    });
+
+    // 篩選下拉選單
+    document.querySelector('.filter-btn')?.addEventListener('click', e => {
+        e.stopPropagation();
+        document.getElementById('ftr')?.classList.toggle('show');
+    });
+
+    window.addEventListener('click', e => {
+        if (!e.target.closest('.filter-btn') && !e.target.closest('.filter-content')) {
+            document.getElementById('ftr')?.classList.remove('show');
+        }
+    });
+});
