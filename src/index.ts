@@ -14,6 +14,7 @@ const app = express();
 const PORT = 3000;
 
 app.use(bodyParser.json());
+
 app.use(express.static(path.join(__dirname, '../public')));
 
 app.get('/', (req, res) => {

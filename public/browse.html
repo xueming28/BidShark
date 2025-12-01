@@ -7,27 +7,36 @@
 </head>
 <body>
     <div id="sidebar"></div>
+
     <div class="main-content">
+
         <div class="top-menu">
-            <input class ="search-bar" type="text" placeholder="Search...">
-            <div class = wrapper>
-                <button class = "filter-button">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <input class="search-bar" type="text" placeholder="Search...">
+
+            <div class="wrapper">
+                <button class="filter-button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" 
+                         fill="none" stroke="currentColor" stroke-width="2">
                         <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
                     </svg>
                 </button>
+
                 <div id="ftr" class="filter-content">
-                    <label class = "filter-element">
+                    <label class="filter-element">
                         Checking thingy
-                        <input type="checkbox">
-                        <br>Sliding thingy
-                        <input type = "range">
+                        <input type="checkbox"><br>
+                        Sliding thingy
+                        <input type="range">
                     </label>
                 </div>
             </div>
-            <button class = "search-button">Search</button>
+
+            <button class="search-button">Search</button>
         </div>
+        <div id="productContainer" class="items-container"></div>
+
     </div>
-    <script type="module" src = "javascript/browse.js"> </script>
+
+    <script type="module" src="javascript/browse.js"></script>
 </body>
 </html>

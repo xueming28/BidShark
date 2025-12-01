@@ -148,14 +148,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 搜尋功能
     const search = () => {
-        const query = document.querySelector('.search-bar')?.value.trim();
-        if (query) {
-            alert(`Search feature under development!\nKeyword: ${query}`);
-        }
+    const query = document.querySelector('.search-bar')?.value.trim();
+    if (!query) return;
+
+    // Redirect to browse page with keyword in URL
+    window.location.href = `browse.html?q=${encodeURIComponent(query)}`;
     };
+
     document.querySelector('.search-btn')?.addEventListener('click', search);
     document.querySelector('.search-bar')?.addEventListener('keypress', e => {
-        if (e.key === 'Enter') search();
+    if (e.key === 'Enter') search();
     });
 
     // 篩選下拉選單

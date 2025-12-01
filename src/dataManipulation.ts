@@ -176,6 +176,9 @@ dataRouter.post('/auctions/create', (req: Request, res: Response) => {
 });
 
 // 首頁：取得所有進行中的拍賣品
+// ==============================
+// GET ALL AUCTIONS
+// ==============================
 dataRouter.get('/auctions', async (req: Request, res: Response) => {
     try {
         const db = await connectDB();
@@ -188,11 +191,13 @@ dataRouter.get('/auctions', async (req: Request, res: Response) => {
         const formatted = items.map(item => {
             const remainingMs = new Date(item.endTime).getTime() - now.getTime();
             let timeLeft = '';
+
             if (remainingMs <= 0) {
                 timeLeft = 'Ended';
             } else {
                 const days = Math.floor(remainingMs / 86400000);
                 const hours = Math.floor((remainingMs % 86400000) / 3600000);
+
                 if (days > 0) timeLeft = `${days} day${days > 1 ? 's' : ''}`;
                 else if (hours > 0) timeLeft = `${hours} hour${hours > 1 ? 's' : ''}`;
                 else timeLeft = 'Less than 1 hour';
@@ -210,15 +215,24 @@ dataRouter.get('/auctions', async (req: Request, res: Response) => {
 
         res.json({ success: true, items: formatted });
     } catch (error) {
-        console.error(error);
+        console.error("❌ Failed to load auctions:", error);
         res.status(500).json({ success: false, message: 'Failed to load auctions' });
     }
 });
 
-// 取得單一商品詳情
+
+// ==============================
+// GET SINGLE AUCTION DETAILS
+// ==============================
 dataRouter.get('/auctions/:id', async (req: Request, res: Response) => {
     try {
         const db = await connectDB();
+
+        // Validate product ID
+        if (!ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ success: false, msg: "Invalid auction ID" });
+        }
+
         const item = await db.collection('auctionItems').findOne({
             _id: new ObjectId(req.params.id),
             status: 'active'
@@ -228,10 +242,17 @@ dataRouter.get('/auctions/:id', async (req: Request, res: Response) => {
             return res.status(404).json({ success: false, message: 'Auction not found or has ended' });
         }
 
-        const seller = await db.collection('Users').findOne(
-            { _id: item.sellerId },
-            { projection: { name: 1 } }
-        );
+        // ============================
+        // SAFE SELLER LOOKUP (IMPORTANT)
+        // ============================
+        let seller = null;
+
+        if (item.sellerId && ObjectId.isValid(item.sellerId.toString())) {
+            seller = await db.collection('Users').findOne(
+                { _id: new ObjectId(item.sellerId.toString()) },
+                { projection: { name: 1 } }
+            );
+        }
 
         res.json({
             success: true,
@@ -243,12 +264,13 @@ dataRouter.get('/auctions/:id', async (req: Request, res: Response) => {
                 startPrice: item.startPrice,
                 currentPrice: item.currentPrice,
                 endTime: item.endTime,
-                sellerId: item.sellerId.toString(),
+                sellerId: item.sellerId?.toString() || null,
                 sellerName: seller?.name || 'Anonymous'
             }
         });
+
     } catch (err: any) {
-        console.error('Product loading failed:', err);
+        console.error('❌ Product loading failed:', err);
         res.status(500).json({ success: false, message: 'Server error' });
     }
 });
