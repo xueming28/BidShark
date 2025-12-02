@@ -13,51 +13,52 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <div id="sidebar"></div>
-    <main class="content">
-      <div class="item-detail">
+    <div class="container">
+        <div id="sidebar"></div>
+        <main class="content">
+        <div class="item-detail">
         <!-- 圖片區 -->
         <div class="item-image">
-          <img id="mainImage" src="" alt="Item Image">
-          <div class="image-gallery" id="gallery"></div>
+        <img id="mainImage" src="" alt="Item Image">
+        <div class="image-gallery" id="gallery"></div>
+    </div>
+
+<!-- 資訊區 -->
+<div class="item-info">
+    <h2 id="itemTitle">Loading...</h2>
+    <div class="item-description"><p id="itemDesc">Loading...</p></div>
+
+    <div class="info-grid">
+        <div class="info-box">
+            <div class="info-label">Seller</div>
+            <div class="info-value" id="sellerName">-</div>
         </div>
-
-        <!-- 資訊區 -->
-        <div class="item-info">
-          <h2 id="itemTitle">Loading...</h2>
-          <div class="item-description"><p id="itemDesc">Loading...</p></div>
-
-          <div class="info-grid">
+        <div id = "blah">
             <div class="info-box">
-              <div class="info-label">Seller</div>
-              <div class="info-value" id="sellerName">-</div>
+                <div class="info-label">Start Bid</div>
+                <div class="info-value" id="startBid">NT$0</div>
             </div>
             <div class="info-box">
-              <div class="info-label">Start Bid</div>
-              <div class="info-value" id="startBid">NT$0</div>
+                <div class="info-label">Highest Bid</div>
+                <div class="info-value" id="highestBid" style="font-weight:bold; color:#e63946;">NT$0</div>
             </div>
             <div class="info-box">
-              <div class="info-label">Highest Bid</div>
-              <div class="info-value" id="highestBid" style="font-weight:bold; color:#e63946;">NT$0</div>
+                <div class="info-label">Time Remaining</div>
+                <div class="info-value warning" id="timeRemaining">Loading...</div>
             </div>
-            <div class="info-box">
-              <div class="info-label">Time Remaining</div>
-              <div class="info-value warning" id="timeRemaining">Loading...</div>
-            </div>
-          </div>
-
-          <div class="bid-section">
-            <input type="number" id="bidAmount" placeholder="輸入出價" min="1" step="10">
-            <button id="placeBidBtn">Place Bid</button>
-          </div>
-
-          <p class="notice" id="bidNotice"></p>
         </div>
-      </div>
-    </main>
-  </div>
+    </div>
+    <div class="bid-section" id ="bidSection">
+        <input type="number" id="bidAmount" placeholder="輸入出價" min="1" step="10">
+        <button id="placeBidBtn" class="btn">Place Bid</button>
+    </div>
 
-  <script type="module" src="javascript/auction_item.js"></script>
+    <p class="notice" id="bidNotice"></p>
+</div>
+</div>
+</main>
+</div>
+
+    <script type="module" src="javascript/auction_item.js"></script>
 </body>
 </html>

@@ -139,7 +139,7 @@ body {
   font-size: 16px;
 }
 
-#placeBidBtn {
+.btn {
   background: black;
   color: white;
   padding: 10px 18px;
@@ -150,7 +150,7 @@ body {
   font-size: 15px;
 }
 
-#placeBidBtn:hover {
+.btn:hover {
   background: salmon;
 }
 

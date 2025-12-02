@@ -76,7 +76,7 @@ function renderItems(items) {
             <img src="${item.image}" class="item-img" />
             <div class="item-name">${item.title}</div>
             <div class="item-price">NTD ${item.price}</div>
-            <div class="item-time">Direct Sale</div>
+            <div class="item-time">${item.stock} in stock</div>
         `;
         }else {
             card.innerHTML = `

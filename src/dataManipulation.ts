@@ -126,6 +126,7 @@ dataRouter.post('/auctions/create', (req: Request, res: Response) => {
                     price: price,
                     stock: stock,
                     category,
+                    status: 'active',
                     createdAt: new Date()
                 });
             }else {
@@ -183,12 +184,7 @@ dataRouter.get('/auctions', async (req: Request, res: Response) => {
     try {
         const db = await connectDB();
         const items = await db.collection('auctionItems')
-            .find({
-                $or: [
-                    { status: 'active' },
-                    { dSale: true }
-                ]
-            })
+            .find({ status: 'active'})
             .sort({ createdAt: -1 })
             .toArray();
 
@@ -200,7 +196,8 @@ dataRouter.get('/auctions', async (req: Request, res: Response) => {
                     _id: item._id.toString(),
                     title: item.title,
                     price: item.price,
-                    image: item.images?.[0] || '/Image/default-item.jpg'
+                    image: item.images?.[0] || '/Image/default-item.jpg',
+                    stock: item.stock || 'err'
                 }
             }
             const remainingMs = new Date(item.endTime).getTime() - now.getTime();
@@ -268,21 +265,38 @@ dataRouter.get('/auctions/:id', async (req: Request, res: Response) => {
                 { projection: { name: 1 } }
             );
         }
-
-        res.json({
-            success: true,
-            item: {
-                _id: item._id.toString(),
-                title: item.title,
-                description: item.description || 'No description available',
-                images: item.images || [],
-                startPrice: item.startPrice,
-                currentPrice: item.currentPrice,
-                endTime: item.endTime,
-                sellerId: item.sellerId?.toString() || null,
-                sellerName: seller?.name || 'Anonymous'
-            }
-        });
+        if(item.dSale){
+            res.json({
+                success: true,
+                item: {
+                    _id: item._id.toString(),
+                    dSale: true,
+                    title: item.title,
+                    description: item.description || 'No description available',
+                    images: item.images || [],
+                    price: item.price || 0,
+                    stock: item.stock || 0,
+                    sellerId: item.sellerId?.toString() || null,
+                    sellerName: seller?.name || 'Anonymous'
+                }
+            });
+        }else {
+            res.json({
+                success: true,
+                item: {
+                    _id: item._id.toString(),
+                    dSale: false,
+                    title: item.title,
+                    description: item.description || 'No description available',
+                    images: item.images || [],
+                    startPrice: item.startPrice,
+                    currentPrice: item.currentPrice,
+                    endTime: item.endTime,
+                    sellerId: item.sellerId?.toString() || null,
+                    sellerName: seller?.name || 'Anonymous'
+                }
+            });
+        }
 
     } catch (err: any) {
         console.error('❌ Product loading failed:', err);

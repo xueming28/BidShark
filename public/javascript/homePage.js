@@ -115,7 +115,7 @@ async function loadAuctionItems() {
                             <div class="more-name">${escapeHtml(item.title)}</div>
                             <div class="more-footer">
                                 <div class="more-price">NT$${item.price}</div>
-                                <div class="more-time">Direct Sale</div>
+                                <div class="more-time">${item.stock} in stock</div>
                             </div>
                         </div>
                     </div>

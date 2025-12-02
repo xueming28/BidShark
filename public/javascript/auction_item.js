@@ -50,43 +50,47 @@ async function loadItem() {
     if (!data.success) throw new Error(data.message || 'Loading failed');
 
     itemData = data.item;
+      // 賣家名稱（從 Users 拿
+      const userRes = await fetch(`/api/read/getUserfromID/${itemData.sellerId}`);
 
+      if (userRes.ok) {
+          const userData = await userRes.json();
+          elements.sellerName.textContent = userData.name || 'Anonymous';
+      } else {
+          elements.sellerName.textContent = 'Unknown seller';
+      }
+
+      // 圖片
+      if (itemData.images && itemData.images.length > 0) {
+          elements.mainImage.src = itemData.images[0];
+          itemData.images.forEach((img, i) => {
+              const thumb = document.createElement('img');
+              thumb.src = img;
+              thumb.className = 'thumb';
+              if (i === 0) thumb.classList.add('active');
+              thumb.onclick = () => {
+                  elements.mainImage.src = img;
+                  document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+                  thumb.classList.add('active');
+              };
+              elements.gallery.appendChild(thumb);
+          });
+      } else {
+          elements.mainImage.src = '/Image/default-item.jpg';
+      }
+
+      elements.itemTitle.textContent = itemData.title;
+      elements.itemDesc.textContent = itemData.description || 'No Description';
+      if(itemData.dSale){
+          dSaleItems(itemData);
+          return;
+      }
     // 基本資訊
-    elements.itemTitle.textContent = itemData.title;
-    elements.itemDesc.textContent = itemData.description || 'No Description';
     elements.startBid.textContent = `NT$${itemData.startPrice}`;
     elements.highestBid.textContent = `NT$${itemData.currentPrice}`;
     elements.bidAmount.min = itemData.currentPrice + 10;
     elements.bidAmount.value = itemData.currentPrice + 10;
 
-    // 賣家名稱（從 Users 拿
-    const userRes = await fetch(`/api/read/getUserfromID/${itemData.sellerId}`);
-
-    if (userRes.ok) {
-      const userData = await userRes.json();
-      elements.sellerName.textContent = userData.name || 'Anonymous';
-    } else {
-      elements.sellerName.textContent = 'Unknown seller';
-    }
-
-    // 圖片
-    if (itemData.images && itemData.images.length > 0) {
-      elements.mainImage.src = itemData.images[0];
-      itemData.images.forEach((img, i) => {
-        const thumb = document.createElement('img');
-        thumb.src = img;
-        thumb.className = 'thumb';
-        if (i === 0) thumb.classList.add('active');
-        thumb.onclick = () => {
-          elements.mainImage.src = img;
-          document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
-          thumb.classList.add('active');
-        };
-        elements.gallery.appendChild(thumb);
-      });
-    } else {
-      elements.mainImage.src = '/Image/default-item.jpg';
-    }
 
     // 開始倒數
     startCountdown(itemData.endTime);
@@ -173,3 +177,25 @@ elements.placeBidBtn.addEventListener('click', async () => {
 });
 // 啟動
 document.addEventListener('DOMContentLoaded', loadItem);
+
+function dSaleItems(itemData) {
+    document.getElementById("blah").innerHTML = `
+        <div class="info-box">
+            <div class="info-label">Quantity</div>
+            <div class="info-value" id="quantity">0</div>
+        </div>
+        <div class="info-box">
+            <div class="info-label">Price</div>
+            <div class="info-value" id="price" style="font-weight:bold; color:#e63946;">NT$0</div>
+        </div>
+    `;
+    document.getElementById("quantity").textContent = itemData.stock + ' left';
+    document.getElementById("price").textContent = `NT$${itemData.price}`;
+    if(itemData.stock <= 0){
+        document.getElementById("bidSection").innerHTML = `Sold out`;
+    }else {
+        document.getElementById("bidSection").innerHTML = `
+        <button id="buyBtn" class = 'btn'>Buy</button>
+        `;
+    }
+}
