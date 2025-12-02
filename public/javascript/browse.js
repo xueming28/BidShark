@@ -71,19 +71,26 @@ function renderItems(items) {
         const card = document.createElement("div");
         card.classList.add("item-card");
         card.dataset.id = item._id;
-
-        card.innerHTML = `
+        if(item.dSale){
+            card.innerHTML = `
+            <img src="${item.image}" class="item-img" />
+            <div class="item-name">${item.title}</div>
+            <div class="item-price">NTD ${item.price}</div>
+            <div class="item-time">Direct Sale</div>
+        `;
+        }else {
+            card.innerHTML = `
             <img src="${item.image}" class="item-img" />
             <div class="item-name">${item.title}</div>
             <div class="item-price">NTD ${item.price}</div>
             <div class="item-time">${item.timeLeft}</div>
         `;
 
-        // Make card clickable → go to item page
-        card.addEventListener("click", () => {
-            window.location.href = `auction_item.html?id=${item._id}`;
-        });
-
+            // Make card clickable → go to item page
+            card.addEventListener("click", () => {
+                window.location.href = `auction_item.html?id=${item._id}`;
+            });
+        }
         container.appendChild(card);
     });
 }

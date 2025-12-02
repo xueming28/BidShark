@@ -183,12 +183,26 @@ dataRouter.get('/auctions', async (req: Request, res: Response) => {
     try {
         const db = await connectDB();
         const items = await db.collection('auctionItems')
-            .find({ status: 'active' })
+            .find({
+                $or: [
+                    { status: 'active' },
+                    { dSale: true }
+                ]
+            })
             .sort({ createdAt: -1 })
             .toArray();
 
         const now = new Date();
         const formatted = items.map(item => {
+            if (item.dSale) {
+                return{
+                    dSale: true,
+                    _id: item._id.toString(),
+                    title: item.title,
+                    price: item.price,
+                    image: item.images?.[0] || '/Image/default-item.jpg'
+                }
+            }
             const remainingMs = new Date(item.endTime).getTime() - now.getTime();
             let timeLeft = '';
 
@@ -204,6 +218,7 @@ dataRouter.get('/auctions', async (req: Request, res: Response) => {
             }
 
             return {
+                dSale: false,
                 _id: item._id.toString(),
                 title: item.title,
                 price: item.currentPrice,

@@ -78,6 +78,7 @@ async function loadAuctionItems() {
 
         //Recommended 區塊 → 取「即將結束」的 5 件（剩餘時間最短）
         const endingSoon = [...items]
+            .filter(item => !item.dSale)
             .sort((a, b) => new Date(a.endTime) - new Date(b.endTime)) // 升冪：最早結束的在前
             .slice(0, 5);
 
@@ -105,18 +106,34 @@ async function loadAuctionItems() {
 
         // 渲染 More 區（最新發布）
         allByLatest.forEach(item => {
-            const smallCardHTML = `
-                <div class="more-card" data-id="${item._id}">
-                    <div class="more-image" style="background-image: url('${item.image || '/Image/default-item.jpg'}'); background-size: cover; background-position: center;"></div>
-                    <div class="more-info">
-                        <div class="more-name">${escapeHtml(item.title)}</div>
-                        <div class="more-footer">
-                            <div class="more-price">NT$${item.price}</div>
-                            <div class="more-time">${item.timeLeft}</div>
+            let smallCardHTML = ''
+            if(item.dSale){
+                smallCardHTML = `
+                    <div class="more-card" data-id="${item._id}">
+                        <div class="more-image" style="background-image: url('${item.image || '/Image/default-item.jpg'}'); background-size: cover; background-position: center;"></div>
+                        <div class="more-info">
+                            <div class="more-name">${escapeHtml(item.title)}</div>
+                            <div class="more-footer">
+                                <div class="more-price">NT$${item.price}</div>
+                                <div class="more-time">Direct Sale</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
+            }else {
+                smallCardHTML = `
+                    <div class="more-card" data-id="${item._id}">
+                        <div class="more-image" style="background-image: url('${item.image || '/Image/default-item.jpg'}'); background-size: cover; background-position: center;"></div>
+                        <div class="more-info">
+                            <div class="more-name">${escapeHtml(item.title)}</div>
+                            <div class="more-footer">
+                                <div class="more-price">NT$${item.price}</div>
+                                <div class="more-time">${item.timeLeft}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
             moreGrid.insertAdjacentHTML('beforeend', smallCardHTML);
         });
 
