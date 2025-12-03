@@ -22,14 +22,7 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 // Multer 設定：儲存圖片
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, uploadDir),
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        const ext = path.extname(file.originalname);
-        cb(null, 'item-' + uniqueSuffix + ext);
-    }
-});
+const storage = multer.memoryStorage();
 
 const upload = multer({
     storage,
@@ -99,7 +92,9 @@ dataRouter.post('/auctions/create', (req: Request, res: Response) => {
             }
 
             const files = req.files as Express.Multer.File[];
-            const images = files?.map(file => `/uploads/${file.filename}`) || [];
+            // store as data URLs (data:<mime>;base64,<base64string>) so images come from DB directly
+            const images = files?.map(file => `data:${file.mimetype};base64,${file.buffer.toString('base64')}`) || [];
+            //const images = files?.map(file => `/uploads/${file.filename}`) || [];
 
             if (images.length === 0) {
                 return res.status(400).json({ success: false, message: 'At least one image is required' });
@@ -392,8 +387,10 @@ dataRouter.get('/myItems', async (req: Request, res: Response) => {
         const now = new Date();
         const formatted = items.map(item => {
             const isDirect = !!item.dSale;
-            const rawImage = item.images && item.images[0] ? item.images[0] : null;
-            const image = rawImage ? (rawImage.startsWith('/') ? rawImage : `/uploads/${rawImage}`) : '/Image/default-item.jpg';
+            const image = item.images?.[0] || '/Image/default-item.jpg';
+            //const rawImage = item.images && item.images[0] ? item.images[0] : null;
+            //const image = rawImage ? (rawImage.startsWith('/') ? rawImage : `/uploads/${rawImage}`) : '/Image/default-item.jpg';
+            
             let timeLeft = '';
             if (!isDirect && item.endTime) {
                 const remainingMs = new Date(item.endTime).getTime() - now.getTime();
