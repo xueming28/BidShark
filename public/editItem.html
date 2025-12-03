@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Edit Item</title>
+  <link rel="stylesheet" href="css/editItem.css">
+</head>
+<body>
+  <div id="sidebar"></div>
+
+  <div class="main-content">
+    <h1 class="page-title">Edit Item</h1>
+
+    <div id="statusMsg" class="status"></div>
+
+    <form id="editForm" enctype="multipart/form-data" class="edit-form">
+      <div class="input-group">
+        <label>Title</label>
+        <input type="text" id="title" name="title" />
+      </div>
+
+      <div class="input-group">
+        <label>Description</label>
+        <textarea id="description" name="description" rows="5"></textarea>
+      </div>
+
+      <div id="auctionFields">
+        <div class="input-group">
+          <label>Start Price (NTD)</label>
+          <input type="number" id="startPrice" name="startPrice" min="1" />
+        </div>
+        <div class="input-group">
+          <label>Extend Duration (days)</label>
+          <input type="number" id="extendDays" name="extendDays" min="1" />
+          <small>Only allowed to extend (add days)</small>
+        </div>
+      </div>
+
+      <div id="directSaleFields">
+        <div class="input-group">
+          <label>Price (NTD)</label>
+          <input type="number" id="price" name="price" min="1" />
+        </div>
+        <div class="input-group">
+          <label>Stock</label>
+          <input type="number" id="stock" name="stock" min="0" />
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Images (you may add more)</label>
+        <input type="file" id="images" name="itemImage" multiple accept="image/*" />
+        <div id="existingImages" class="existing-images"></div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" id="saveBtn">Save changes</button>
+        <a id="cancelBtn" href="#" class="btn-link">Cancel</a>
+      </div>
+    </form>
+  </div>
+
+  <script type="module" src="javascript/editItem.js"></script>
+</body>
+</html>

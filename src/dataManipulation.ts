@@ -420,4 +420,161 @@ dataRouter.get('/myItems', async (req: Request, res: Response) => {
         res.status(500).json({ success: false, message: 'Server error' });
     }
 });
+
+dataRouter.get('/auctions/:id/edit', async (req: Request, res: Response) => {
+    try {
+        const id = req.params.id;
+        if (!ObjectId.isValid(id)) return res.status(400).json({ success: false, message: 'Invalid id' });
+
+        const db = await connectDB();
+        const item = await db.collection('auctionItems').findOne({ _id: new ObjectId(id), status: 'active' });
+        if (!item) return res.status(404).json({ success: false, message: 'Item not found' });
+
+        const bidsCount = Array.isArray(item.bids) ? item.bids.length : 0;
+        const isOwner = !!(req.session?.user?.id && req.session.user.id === item.sellerId?.toString());
+
+        res.json({
+            success: true,
+            item: {
+                _id: item._id.toString(),
+                title: item.title,
+                description: item.description || '',
+                images: item.images || [],
+                dSale: !!item.dSale,
+                price: item.price ?? item.startPrice ?? null,
+                stock: item.stock ?? null,
+                endTime: item.endTime ?? null
+            },
+            bidsCount,
+            isOwner
+        });
+    } catch (err) {
+        console.error('Failed to load auction for editing:', err);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+dataRouter.post('/auctions/:id/edit', (req: Request, res: Response) => {
+    // reuse multer memoryStorage upload (already defined above)
+    upload(req, res, async (err) => {
+        if (err) {
+            console.error('Upload error:', err);
+            return res.status(400).json({ success: false, message: err.message || 'Upload failed' });
+        }
+
+        try {
+            const id = req.params.id;
+            if (!ObjectId.isValid(id)) return res.status(400).json({ success: false, message: 'Invalid id' });
+
+            if (!req.session?.user?.id) return res.status(401).json({ success: false, message: 'Not logged in' });
+
+            const db = await connectDB();
+            const item = await db.collection('auctionItems').findOne({ _id: new ObjectId(id) });
+            if (!item) return res.status(404).json({ success: false, message: 'Item not found' });
+
+            if (item.sellerId?.toString() !== req.session.user.id) {
+                return res.status(403).json({ success: false, message: 'Not the seller' });
+            }
+
+            const bidsCount = Array.isArray(item.bids) ? item.bids.length : 0;
+            const files = req.files as Express.Multer.File[] || [];
+
+            // convert uploaded files into data URLs (same convention as create)
+            const newImages = files.map(f => `data:${f.mimetype};base64,${f.buffer.toString('base64')}`);
+
+            const updates: any = {};
+            const pushOps: any = {};
+
+            if (bidsCount > 0) {
+                // only description and append images allowed
+                if (req.body.title || req.body.price || req.body.startPrice || req.body.stock || req.body.extendDays) {
+                    // ignore or reject changes to forbidden fields
+                    return res.status(400).json({ success: false, message: 'Item already has bids — only description update and adding photos allowed' });
+                }
+
+                if (req.body.description && req.body.description !== item.description) {
+                    updates.description = req.body.description.trim();
+                }
+
+                if (newImages.length > 0) {
+                    // append images (do NOT remove existing)
+                    pushOps.images = newImages;
+                }
+            } else {
+                // no bids yet — allow more fields
+                if (req.body.title) updates.title = req.body.title.trim();
+                if (req.body.description) updates.description = req.body.description.trim();
+
+                if (item.dSale) {
+                    // direct sale: allow price & stock
+                    if (req.body.price) updates.price = Number(req.body.price);
+                    if (req.body.stock) updates.stock = Number(req.body.stock);
+                } else {
+                    // auction: allow startPrice (only if lower than current? since no bids currentPrice==startPrice)
+                    if (req.body.startPrice) {
+                        const sp = Number(req.body.startPrice);
+                        if (isNaN(sp) || sp <= 0) return res.status(400).json({ success: false, message: 'Invalid startPrice' });
+                        updates.startPrice = sp;
+                        updates.currentPrice = sp; // keep currentPrice in sync when no bids yet
+                    }
+
+                    // duration extension: client may send extendDays
+                    if (req.body.extendDays) {
+                        const extendDays = parseInt(String(req.body.extendDays), 10);
+                        if (isNaN(extendDays) || extendDays <= 0) {
+                            return res.status(400).json({ success: false, message: 'Invalid extendDays' });
+                        }
+                        const oldEnd = item.endTime ? new Date(item.endTime) : null;
+                        if (!oldEnd) {
+                            return res.status(400).json({ success: false, message: 'Original endTime missing' });
+                        }
+                        const newEnd = new Date(oldEnd);
+                        newEnd.setDate(newEnd.getDate() + extendDays);
+                        if (newEnd <= oldEnd) {
+                            return res.status(400).json({ success: false, message: 'New end time must be later than previous end time' });
+                        }
+                        updates.endTime = newEnd;
+                    }
+                }
+
+                // images: if new images provided, replace existing images with new set
+                if (newImages.length > 0) {
+                    updates.images = newImages;
+                }
+            }
+
+            // build final update object
+            const finalUpdate: any = {};
+            if (Object.keys(updates).length > 0) finalUpdate.$set = updates;
+            if (pushOps.images) finalUpdate.$push = { images: { $each: pushOps.images } };
+
+            if (Object.keys(finalUpdate).length === 0) {
+                return res.status(400).json({ success: false, message: 'No valid changes provided' });
+            }
+
+            await db.collection('auctionItems').updateOne({ _id: item._id }, finalUpdate);
+
+            // return updated item snapshot
+            const updated = await db.collection('auctionItems').findOne({ _id: item._id });
+            res.json({
+                success: true,
+                message: 'Item updated',
+                item: {
+                    _id: updated?._id.toString(),
+                    title: updated?.title,
+                    description: updated?.description,
+                    images: updated?.images || [],
+                    dSale: !!updated?.dSale,
+                    price: updated?.price ?? updated?.startPrice ?? null,
+                    stock: updated?.stock ?? null,
+                    endTime: updated?.endTime ?? null
+                }
+            });
+        } catch (e) {
+            console.error('Edit item failed:', e);
+            res.status(500).json({ success: false, message: 'Server error' });
+        }
+    });
+});
+
 export default dataRouter;

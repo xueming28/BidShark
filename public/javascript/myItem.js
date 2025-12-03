@@ -83,7 +83,7 @@ async function loadMyItems() {
             `;
             // click card -> go to it's auction page
             card.addEventListener('click', () => {
-                window.location.href = `auctionItem.html?id=${item._id}`;
+                window.location.href = `editItem.html?id=${item._id}`;
             });
             container.appendChild(card);
         });
