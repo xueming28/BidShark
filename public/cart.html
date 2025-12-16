@@ -35,19 +35,29 @@
             <p style="color: #666; margin-top: 5px;">管理您已競標的所有商品</p>
         </div>
 
-        <!-- 表格標題 -->
-        <div class="table-header">
-            <div>Bidding</div>
+       <h3 class="section-title">購物車 (待付款)</h3>
+        <div id="cart-container" class="row">
+            <p class="col-12 empty-msg">正在載入購物車...</p>
         </div>
-        <div class = "cart-item" id="bidItems">
 
+        <div class="cart-actions" id="checkout-bar" style="display:none;">
+            <div>
+                <h5>已選金額: <span id="total-price" class="price-tag">$0</span></h5>
+            </div>
+            <button id="btn-checkout" class="btn btn-success btn-lg" disabled>前往結帳</button>
         </div>
-        <div class="table-header">
-            <div>Deals</div>
-        </div>
-        <div class = "cart-item" id="cartItems">
 
+        <h3 class="section-title">正在競標 (Bidding)</h3>
+        <div id="bidItems" class="row">
+            <p class="col-12 empty-msg">載入競標資訊中...</p>
         </div>
+
+        <h3 class="section-title">歷史訂單 (History)</h3>
+        <div id="cartItems" class="row">
+            <p class="col-12 empty-msg">載入歷史訂單中...</p>
+        </div>
+
+    
 
     </div>
 

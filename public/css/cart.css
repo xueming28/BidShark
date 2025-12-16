@@ -13,15 +13,20 @@ body {
     min-height: 100vh;
 }
 
-.main-content{
-    margin-left: 240px;
+/* --- 佈局 Layout --- */
+.main-content {
+    margin-left: 240px; /* 配合 Sidebar 寬度 */
     flex: 1;
     padding: 30px 40px;
+    position: relative; /* 為了讓 sticky bar 定位 */
 }
-.top-menu{
+
+/* --- 上方搜尋列 Top Menu (保留你原本的樣式) --- */
+.top-menu {
     display: flex;
     margin-bottom: 40px;
 }
+
 .search-bar {
     padding: 16px 16px;
     border: 1px solid #e0e0e0;
@@ -32,13 +37,18 @@ body {
     align-items: center;
     gap: 8px;
     transition: all 0.2s;
-    width: 200%;
+    width: 100%; /* 修改為 100% 比較適應響應式 */
+    flex-grow: 1;
+    margin-right: 10px;
 }
-.wrapper{
+
+.wrapper {
     position: relative;
     display: inline-block;
+    margin-right: 10px;
 }
-.filter-button{
+
+.filter-button {
     padding: 16px 20px;
     background: white;
     color: black;
@@ -47,28 +57,43 @@ body {
     cursor: pointer;
     font-weight: 600;
     transition: all 0.2s;
-    gap : 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 100%;
 }
-.filter-button:hover{
+
+.filter-button:hover {
     background: rgb(240, 240, 240);
 }
-.filter-content{
+
+.filter-content {
     display: none;
-    position : absolute;
+    position: absolute;
     background: white;
     border: 1px solid #e0e0e0;
     min-width: 160px;
-
+    z-index: 10;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-radius: 6px;
+    margin-top: 5px;
 }
+
 .filter-content.show {
     display: block;
 }
-.filter-element{
+
+.filter-element {
     color: black;
     padding: 12px 16px;
     text-decoration: none;
     display: block;
 }
+
+.filter-element:hover {
+    background-color: #f5f5f5;
+}
+
 .search-button {
     padding: 16px 20px;
     background: #000;
@@ -78,198 +103,166 @@ body {
     cursor: pointer;
     font-weight: 600;
     transition: all 0.2s;
-    gap : 8px;
+    white-space: nowrap;
 }
 
 .search-button:hover {
     background: #333;
 }
 
- /* 購物車樣式 */
-        .cart-header {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
+/* --- 標題區域 Header --- */
+.cart-header {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
 
-        .cart-header h1 {
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
+.cart-header h1 {
+    font-size: 24px;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
 
-        .table-header {
-            display: grid;
-            grid-template-columns: 50px 1fr 120px 180px 120px 50px;
-            background-color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            font-size: 14px;
-            color: #666;
-            font-weight: 600;
-        }
+/* --- 分區標題 Section Title (新增) --- */
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #444;
+    margin: 30px 0 15px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e0e0e0;
+}
 
-        .cart-item {
-            display: flex;
-            gap: 16px;
-            background-color: white;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
+/* --- 卡片樣式 Card Styles (取代原本的 Table 樣式) --- */
+.card {
+    border: none !important;
+    border-radius: 10px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+    background: white;
+    overflow: hidden;
+    margin-bottom: 20px; /* 卡片間距 */
+}
 
-        .seller-name {
-            padding: 10px 20px;
-            background-color: #fafafa;
-            border-bottom: 1px solid #e0e0e0;
-            font-size: 13px;
-            color: #666;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
 
-        .seller-name input[type="checkbox"] {
-            margin-right: 8px;
-        }
+.card-img-top {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    background-color: #f0f0f0;
+}
 
-        .bidded-date {
-            font-size: 11px;
-            color: #999;
-        }
+.card-body {
+    padding: 15px;
+}
 
-        .item-content {
-            display: grid;
-            grid-template-columns: 50px 1fr 120px 180px 120px 50px;
-            padding: 20px;
-            align-items: center;
-            gap: 15px;
-        }
+.card-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
-        .item-checkbox {
-            display: flex;
-            justify-content: center;
-        }
+.card-text {
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.6;
+}
 
-        .item-info {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
+/* --- 1. 購物車專用樣式 (待付款) --- */
+/* 綠色邊框代表這是「已得標」需要處理的商品 */
+.cart-item-card {
+    border: 2px solid #28a745 !important; 
+    position: relative;
+}
 
-        .item-image {
-            width: 80px;
-            height: 80px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            color: white;
-            font-weight: bold;
-        }
+/* 核取方塊 Checkbox */
+.cart-checkbox {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    margin-top: 5px;
+    cursor: pointer;
+    accent-color: #28a745; /* 設定 checkbox 顏色 */
+}
 
-        .item-image.pink {
-            background-color: #ffb3ba;
-        }
+/* --- 2. 結帳列 Checkout Bar (新增 - 置底浮動) --- */
+.cart-actions {
+    position: sticky;
+    bottom: 20px;
+    background: white;
+    padding: 15px 25px;
+    border-radius: 50px; /* 圓潤造型 */
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    margin-top: 20px;
+    border: 1px solid #eee;
+    animation: slideUp 0.3s ease-out;
+}
 
-        .item-image.yellow {
-            background-color: #ffffba;
-        }
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
 
-        .item-image.blue {
-            background-color: #bae1ff;
-        }
+.price-tag {
+    color: #e74c3c;
+    font-weight: 800;
+    font-size: 1.6rem;
+    margin-left: 5px;
+}
 
-        .item-name {
-            font-size: 16px;
-            color: #333;
-        }
+/* --- 3. 倒數計時 Countdown --- */
+.countdown {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    background: #fff0f0;
+    color: #e74c3c;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
 
-        .price {
-            text-align: center;
-            font-size: 16px;
-            color: #333;
-        }
+/* --- 4. 空狀態 Empty State --- */
+.empty-msg {
+    text-align: center;
+    padding: 50px;
+    color: #aaa;
+    font-size: 1.1rem;
+    background: white;
+    border-radius: 10px;
+    width: 100%;
+    border: 1px dashed #ddd;
+}
 
-        .quantity-control {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
+/* --- 響應式調整 --- */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        padding: 20px;
+    }
+    
+    .top-menu {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .search-bar {
+        width: 100%;
+        margin-right: 0;
+    }
 
-        .quantity-control button {
-            width: 30px;
-            height: 30px;
-            border: 1px solid #ddd;
-            background-color: white;
-            cursor: pointer;
-            font-size: 18px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .quantity-control button:hover {
-            background-color: #f5f5f5;
-        }
-
-        .quantity-control input {
-            width: 50px;
-            text-align: center;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 5px;
-            font-size: 14px;
-        }
-
-        .total-price {
-            text-align: center;
-            font-size: 16px;
-            color: #333;
-            font-weight: bold;
-        }
-
-        .remove-btn {
-            background: none;
-            border: none;
-            color: #999;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 0;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .remove-btn:hover {
-            color: #ff4444;
-        }
-
-        input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-
-        .empty-cart {
-            text-align: center;
-            padding: 80px 20px;
-            background-color: white;
-            border-radius: 8px;
-            color: #999;
-            font-size: 18px;
-        }
-
-        .empty-cart svg {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 20px;
-            opacity: 0.3;
-        }
+    .cart-actions {
+        flex-direction: column;
+        gap: 15px;
+        border-radius: 1
