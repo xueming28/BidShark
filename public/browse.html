@@ -15,19 +15,49 @@
 
             <div class="wrapper">
                 <button class="filter-button">
-                    <svg width="16" height="16" viewBox="0 0 24 24" 
-                         fill="none" stroke="currentColor" stroke-width="2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
                     </svg>
                 </button>
 
                 <div id="ftr" class="filter-content">
-                    <label class="filter-element">
-                        Checking thingy
-                        <input type="checkbox"><br>
-                        Sliding thingy
-                        <input type="range">
-                    </label>
+
+                    <!-- 1. 分類篩選 -->
+                    <div class="filter-group">
+                        <label>Category</label>
+                        <select id="categoryFilter">
+                            <option value="all">All Categories</option>
+                            <option value="electronics">Electronics</option>
+                            <option value="books">Books</option>
+                            <option value="fashion">Apparel & Accessories</option>
+                            <option value="collectibles">Collectibles</option>
+                            <option value="other">Other</option>
+                            <!-- 根據你的資料庫實際有的分類增加選項 -->
+                        </select>
+                    </div>
+
+                    <!-- 2. 銷售類型 -->
+                    <div class="filter-group">
+                        <label>Type</label>
+                        <select id="typeFilter">
+                            <option value="all">All Types</option>
+                            <option value="auction">Auction Only</option>
+                            <option value="direct">Buy Now Only</option>
+                        </select>
+                    </div>
+
+                    <!-- 3. 價格範圍 -->
+                    <div class="filter-group">
+                        <label>Price Range</label>
+                        <div class="price-inputs">
+                            <input type="number" id="minPrice" placeholder="Min" min="0">
+                            <span>-</span>
+                            <input type="number" id="maxPrice" placeholder="Max" min="0">
+                        </div>
+                    </div>
+
+                    <!-- 4. 按鈕 -->
+                    <button id="applyFilterBtn" class="btn-apply">Apply Filters</button>
                 </div>
             </div>
 

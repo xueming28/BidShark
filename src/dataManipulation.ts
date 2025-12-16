@@ -175,26 +175,69 @@ dataRouter.post('/auctions/create', (req: Request, res: Response) => {
 
 // 首頁：取得所有進行中的拍賣品
 // ==============================
-// GET ALL AUCTIONS
+// GET ALL AUCTIONS (WITH FILTER)
 // ==============================
 dataRouter.get('/auctions', async (req: Request, res: Response) => {
     try {
         const db = await connectDB();
+        
+        // 1. 讀取前端傳來的參數
+        const { category, minPrice, maxPrice, type, search } = req.query;
+
+        // 2. 建立基礎查詢條件
+        const query: any = { status: 'active' };
+
+        // 3. 分類篩選 (Category)
+        if (category && typeof category === 'string' && category !== 'all') {
+            // 使用正則表達式進行不分大小寫的匹配，或者直接匹配
+            query.category = category; 
+        }
+
+        // 4. 關鍵字搜尋 (Search) - 如果前端透過參數傳搜尋字
+        if (search && typeof search === 'string') {
+            query.title = { $regex: search, $options: 'i' };
+        }
+
+        // 5. 類型篩選 (Auction vs Direct Sale)
+        if (type === 'auction') {
+            query.dSale = false;
+        } else if (type === 'direct') {
+            query.dSale = true;
+        }
+
+        // 6. 價格範圍篩選 (Price Range)
+        // 難點：直購看 'price'，拍賣看 'currentPrice'
+        const min = minPrice ? Number(minPrice) : 0;
+        const max = maxPrice ? Number(maxPrice) : Number.MAX_SAFE_INTEGER;
+
+        if (minPrice || maxPrice) {
+            // 使用 $and 結合 $or 來處理兩種不同的價格欄位
+            query.$and = [
+                {
+                    $or: [
+                        // 情境 A: 直購商品，檢查 price
+                        { dSale: true, price: { $gte: min, $lte: max } },
+                        // 情境 B: 拍賣商品，檢查 currentPrice
+                        { dSale: false, currentPrice: { $gte: min, $lte: max } }
+                    ]
+                }
+            ];
+        }
+
+        // 執行查詢
         const items = await db.collection('auctionItems')
-            .find({ status: 'active'})
+            .find(query)
             .sort({ createdAt: -1 })
             .toArray();
 
         const now = new Date();
+        
         const formatted = items.map(item => {
             if (item.dSale) {
                 if(item.stock <= 0){
-                    db.collection('auctionItems').updateOne({
-                        _id: item._id
-                    },{
-                        $set: { status: 'inactive' }
-                    });
-                    return;
+                    // (原有的庫存檢查邏輯)
+                    db.collection('auctionItems').updateOne({_id: item._id},{$set: { status: 'inactive' }});
+                    return null; // 標記為 null 稍後過濾
                 }
                 return{
                     dSale: true,
@@ -205,17 +248,16 @@ dataRouter.get('/auctions', async (req: Request, res: Response) => {
                     stock: item.stock || 'err'
                 }
             }
+            // 拍賣邏輯
             const remainingMs = new Date(item.endTime).getTime() - now.getTime();
             let timeLeft = '';
 
             if (remainingMs <= 0) {
-                timeLeft = 'Ended';
-                settleAuction(item._id.toString());
-                return;
+                settleAuction(item._id.toString()); // 觸發結算
+                return null; // 過期商品不回傳
             } else {
                 const days = Math.floor(remainingMs / 86400000);
                 const hours = Math.floor((remainingMs % 86400000) / 3600000);
-
                 if (days > 0) timeLeft = `${days} day${days > 1 ? 's' : ''}`;
                 else if (hours > 0) timeLeft = `${hours} hour${hours > 1 ? 's' : ''}`;
                 else timeLeft = 'Less than 1 hour';
@@ -225,12 +267,12 @@ dataRouter.get('/auctions', async (req: Request, res: Response) => {
                 dSale: false,
                 _id: item._id.toString(),
                 title: item.title,
-                price: item.currentPrice,
+                price: item.currentPrice, // 注意這裡用 currentPrice
                 image: item.images?.[0] || '/Image/default-item.jpg',
                 timeLeft,
                 endTime: item.endTime
             };
-        });
+        }).filter(item => item !== null); // 過濾掉剛才標記為 null 的過期/缺貨商品
 
         res.json({ success: true, items: formatted });
     } catch (error) {

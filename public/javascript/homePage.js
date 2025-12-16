@@ -171,20 +171,9 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = `browse.html?q=${encodeURIComponent(query)}`;
     };
 
-    document.querySelector('.search-btn')?.addEventListener('click', search);
+    document.querySelector('.search-button')?.addEventListener('click', search);
     document.querySelector('.search-bar')?.addEventListener('keypress', e => {
     if (e.key === 'Enter') search();
     });
 
-    // 篩選下拉選單
-    document.querySelector('.filter-btn')?.addEventListener('click', e => {
-        e.stopPropagation();
-        document.getElementById('ftr')?.classList.toggle('show');
-    });
-
-    window.addEventListener('click', e => {
-        if (!e.target.closest('.filter-btn') && !e.target.closest('.filter-content')) {
-            document.getElementById('ftr')?.classList.remove('show');
-        }
-    });
 });

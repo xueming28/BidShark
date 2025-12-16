@@ -13,13 +13,13 @@ body {
     min-height: 100vh;
 }
 
-.main-content{
+.main-content {
     margin-left: 240px;
     flex: 1;
     padding: 30px 40px;
 }
 
-.top-menu{
+.top-menu {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -27,7 +27,8 @@ body {
 }
 
 .search-bar {
-    flex: 1;                     /* FIX: Make it fill space instead of 200% */
+    flex: 1;
+    /* FIX: Make it fill space instead of 200% */
     padding: 16px;
     border: 1px solid #e0e0e0;
     background: white;
@@ -36,7 +37,7 @@ body {
     font-size: 16px;
 }
 
-.filter-button{
+.filter-button {
     padding: 16px 20px;
     background: white;
     color: black;
@@ -47,34 +48,70 @@ body {
     transition: all 0.2s;
 }
 
-.wrapper{
+.wrapper {
     position: relative;
 }
 
-.filter-button:hover{
+.filter-button:hover {
     background: rgb(240, 240, 240);
 }
 
-.filter-content{
+.filter-content {
     display: none;
     position: absolute;
+    right: 0; 
     z-index: 5;
     background: white;
     border: 1px solid #e0e0e0;
-    min-width: 160px;
+    min-width: 250px;
     border-radius: 6px;
-    padding: 10px;
+    padding: 15px;
+    width: 15vw;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 .filter-content.show {
     display: block;
 }
 
-.filter-element{
+.filter-element {
     color: black;
     padding: 10px;
     display: block;
     font-size: 14px;
+}
+
+.filter-group {
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.filter-group select,
+.filter-group input {
+    width: 100%;
+    padding: 5px;
+}
+
+.price-inputs {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.btn-apply {
+    width: 100%;
+    padding: 8px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
 }
 
 .search-button {
@@ -100,6 +137,8 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
     gap: 20px;
+        position: relative; /* 讓內部的 absolute 元素以這個區塊為基準 */
+    min-height: 50vh;   /* 給它至少一半視窗的高度，確保 Spinner 有空間置中 */
 }
 
 .item-card {
@@ -113,7 +152,7 @@ body {
 
 .item-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .item-img {
@@ -140,6 +179,7 @@ body {
     font-size: 14px;
     color: #777;
 }
+
 .spinner {
     border: 4px solid #939393;
     border-top: 4px solid #d0d0d0;
@@ -147,14 +187,27 @@ body {
     width: 40px;
     height: 40px;
     animation: spin 1s linear infinite;
-    display: block;
-    margin: auto;
     opacity: 50%;
+
+    display: block;
+    position: absolute;  /* 脫離 Grid 排版流 */
+    top: 50%;            /* 垂直位置在 50% */
+    left: 50%;           /* 水平位置在 50% */
+    transform: translate(-50%, -50%); /* 修正自身的寬高偏移，達到完美置中 */
+    margin: 0;           /* 移除原本的 auto */
+    z-index: 10;         /* 確保在最上層 */
 }
+
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
+
 .hidden {
     display: none !important;
 }
