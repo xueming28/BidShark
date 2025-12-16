@@ -8,6 +8,7 @@ import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { settleAuction } from './auctionService.ts';
+import {establishChat} from "./chat.ts";
 
 const { Router } = expressPkg;
 const dataRouter = Router();
@@ -639,6 +640,7 @@ dataRouter.post('/auctions/:id/buy/:amt', async (req: Request, res: Response) =>
                 total_price: item.price * amt,
                 purchaseDate: new Date()
         });
+        establishChat(req.session.user.id, item.sellerId.toString(), result.insertedId);
         res.json({ success: true, message: 'Purchase successful' });
     } catch (err) {
         console.error('Purchase failed:', err);

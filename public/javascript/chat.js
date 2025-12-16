@@ -16,3 +16,9 @@ fetch('sideBar.html')
             sideBar.collapse();
         }
     });
+document.addEventListener('DOMContentLoaded', () => {
+
+});
+(function(){
+    //refresh every 1 second
+})();
