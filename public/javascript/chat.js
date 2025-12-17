@@ -16,9 +16,28 @@ fetch('sideBar.html')
             sideBar.collapse();
         }
     });
-document.addEventListener('DOMContentLoaded', () => {
 
-});
+async function loadChats() {
+    const chats = await fetch('/api/chat/getYourChats');
+    const cCont = document.getElementById('chatContainer');
+    if (chats.ok) {
+        const data = await chats.json();
+        if (data.length === 0) {
+            cCont.innerHTML = '<p>No chats found.</p>';
+            return;
+        }
+        cCont.innerHTML = '';
+        data.forEach(chat => {
+            const chatDiv = document.createElement('button');
+            chatDiv.classList.add("list-group-item", "list-group-item-action");
+            chatDiv.textContent = chat.OnSubject + '(@' + chat.withUser + ')';
+            chatDiv.value = chat.chatId;
+            cCont.appendChild(chatDiv);
+        });
+    }
+}
+document.addEventListener('DOMContentLoaded', loadChats);
 (function(){
     //refresh every 1 second
+    setInterval(loadChats, 5000);
 })();

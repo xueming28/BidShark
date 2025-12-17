@@ -17,3 +17,30 @@ body {
     flex: 1;
     padding: 30px 40px;
 }
+.spinner {
+    border: 4px solid #939393;
+    border-top: 4px solid #d0d0d0;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    opacity: 50%;
+
+    display: block;
+    position: absolute;  /* 脫離 Grid 排版流 */
+    top: 50%;            /* 垂直位置在 50% */
+    left: 50%;           /* 水平位置在 50% */
+    transform: translate(-50%, -50%); /* 修正自身的寬高偏移，達到完美置中 */
+    margin: 0;           /* 移除原本的 auto */
+    z-index: 10;         /* 確保在最上層 */
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

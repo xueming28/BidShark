@@ -61,8 +61,8 @@ chatRouter.get('/getChat/:id', async (req: Request, res: Response) => {
         return res.status(200).json(msg);
     }
 });
-chatRouter.get('getYourchats', async (req: Request, res: Response) => {
-    const userId = req.session.userId;
+chatRouter.get('/getYourChats', async (req: Request, res: Response) => {
+    const userId = req.session.user.id;
     if (!userId) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
@@ -76,7 +76,28 @@ chatRouter.get('getYourchats', async (req: Request, res: Response) => {
         return res.status(404).json({ error: 'User not found' });
     }
     const chatIds = userData.chat || [];
-    return res.status(200).json(chatIds);
+    const chatDetails = await chatsCollection.find({
+        _id: { $in: chatIds }
+    }).toArray();
+    let output = [];
+    for (const chatDetail of chatDetails) {
+        const otherUserId = chatDetail.Aside_id.toString() === userId ? chatDetail.Bside_id : chatDetail.Aside_id;
+        const otherUserData = await userCollection.findOne({
+            _id: new ObjectId(otherUserId.toString())
+        });
+        const subjectData = await db.collection('deal').findOne({
+            _id: new ObjectId(chatDetail.subject.toString())
+        });
+        const name = await db.collection('auctionItems').findOne({
+            _id: new ObjectId(subjectData ? subjectData.itemId.toString() : '')
+        });
+        output.push({
+            chatId: chatDetail._id,
+            withUser: otherUserData ? otherUserData.name : 'Unknown',
+            OnSubject: name ? name.title : 'Unknown Subject'
+        });
+    }
+    return res.status(200).json(output);
 });
 chatRouter.post('/sendMessage', async (req: Request, res: Response) => {
     const {message, chatId} = req.body;
