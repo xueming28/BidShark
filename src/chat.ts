@@ -35,7 +35,7 @@ chatRouter.get('/getChat/:id', async (req: Request, res: Response) => {
     const db = await connectDB();
     const chatsCollection = db.collection('chat');
     const chatData = await chatsCollection.findOne({
-        _id: id
+        _id: new ObjectId(id)
     });
     if (!chatData) {
         return res.status(404).json({ error: 'Chat not found' });

@@ -32,9 +32,56 @@ async function loadChats() {
             chatDiv.classList.add("list-group-item", "list-group-item-action");
             chatDiv.textContent = chat.OnSubject + '(@' + chat.withUser + ')';
             chatDiv.value = chat.chatId;
+            chatDiv.onclick = () => {
+                getMessages(chat.chatId, chat.OnSubject, chat.withUser);
+            }
             cCont.appendChild(chatDiv);
         });
     }
+}
+async function getMessages(chatId, subject, withUser) {
+    const response = await fetch(`/api/chat/getChat/${chatId}`);
+    document.getElementById('chatIdInput').value = chatId;
+    const messagesArea = document.getElementById('messagesArea');
+    document.getElementById("noChatSelected").classList.add('d-none');
+    document.getElementById("chatContent").classList.remove('d-none');
+    document.getElementById("recipientName").textContent = withUser;
+    document.getElementById("subjectTitle").textContent = subject;
+    if (response.ok) {
+        const data = await response.json();
+
+        // Clear previous messages
+        messagesArea.innerHTML = '';
+
+        if (data.length === 0) {
+            messagesArea.innerHTML = '<p class="text-center text-muted mt-5">Start the conversation!</p>';
+            return;
+        }
+
+        data.forEach(msg => {
+            const isUser = msg.speaker === 'You';
+            const messageWrapper = document.createElement('div');
+            messageWrapper.className = `d-flex mb-2 ${isUser ? 'justify-content-end' : 'justify-content-start'}`;
+            const messageBubble = document.createElement('div');
+            messageBubble.className = `p-2 rounded-3 text-break shadow-sm`;
+            if (isUser) {
+                messageBubble.classList.add('bg-primary', 'text-white');
+            } else {
+                messageBubble.classList.add('bg-light', 'text-dark', 'border');
+            }
+            if (!isUser) {
+                messageBubble.innerHTML = `<small class="text-muted d-block">${msg.speaker}</small>`;
+            }
+            messageBubble.innerHTML += `<p class="mb-0">${msg.message}</p>`;
+            messageWrapper.appendChild(messageBubble);
+            messagesArea.appendChild(messageWrapper);
+        });
+        messagesArea.scrollTop = messagesArea.scrollHeight;
+    } else {
+        messagesArea.innerHTML = '<p class="text-danger text-center mt-5">Failed to load chat messages.</p>';
+        console.error('Error loading chat:', response.status);
+    }
+
 }
 document.addEventListener('DOMContentLoaded', loadChats);
 (function(){

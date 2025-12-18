@@ -44,3 +44,21 @@ body {
         transform: rotate(360deg);
     }
 }
+html, body, .container-fluid, .row {
+    height: 100%;
+}
+.chat-list-container {
+    height: 100vh; /* Full viewport height */
+    overflow-y: auto;
+    border-right: 1px solid #ccc;
+}
+.chat-messages-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.message-box {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 15px;
+}
