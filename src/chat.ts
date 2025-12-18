@@ -46,7 +46,7 @@ chatRouter.get('/getChat/:id', async (req: Request, res: Response) => {
         }
         let msg : shtuff[] = [];
         chatData.chat.forEach(m => {
-            if(m.speaker === req.session.userId){
+            if(m.speaker === req.session.user.id){
                 msg.push({
                     speaker: 'You',
                     message: m.message
@@ -101,23 +101,36 @@ chatRouter.get('/getYourChats', async (req: Request, res: Response) => {
 });
 chatRouter.post('/sendMessage', async (req: Request, res: Response) => {
     const {message, chatId} = req.body;
-    const senderId = req.session.userId;
+    // console.log(message, chatId);
+    const senderId = req.session.user.id;
+    // console.log(senderId || 'no sender id');
     if (!senderId) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
     const db = await connectDB();
     const chatsCollection = db.collection('chat');
-    chatsCollection.updateOne({
-        _id: chatId
-    }, {
-        $push: {
-            chat: {
-                speaker: senderId,
-                message: message
+    try {
+        const result = await chatsCollection.updateOne(
+            { _id: new ObjectId(chatId.trim()) },
+            {
+                $push: {
+                    chat: {
+                        speaker: senderId.toString(),
+                        message
+                    }
+                }
             }
-        }
-    })
-    res.status(200).json({ status: 'Message sent' });
+        );
+
+        // console.log("--- MongoDB Update Result ---");
+        // console.log("Matched Count:", result.matchedCount);
+        // console.log("Modified Count:", result.modifiedCount);
+
+        res.status(200).json({ status: 'Message sent' });
+    } catch (err) {
+        console.error("MongoDB error:", err);
+        res.status(500).json({ error: 'DB error' });
+    }
 });
 
 export default chatRouter;

@@ -1,5 +1,7 @@
 import * as sideBar from "./sideBar.js";
-
+let currentChatId = null;
+let currentSubject = null;
+let currentWithUser = null;
 fetch('sideBar.html')
     .then(res => res.text())
     .then(html => {
@@ -41,8 +43,11 @@ async function loadChats() {
 }
 async function getMessages(chatId, subject, withUser) {
     const response = await fetch(`/api/chat/getChat/${chatId}`);
-    document.getElementById('chatIdInput').value = chatId;
+    currentChatId = chatId;
+    currentSubject = subject;
+    currentWithUser = withUser;
     const messagesArea = document.getElementById('messagesArea');
+    document.getElementById('chatIdInput').value = chatId;
     document.getElementById("noChatSelected").classList.add('d-none');
     document.getElementById("chatContent").classList.remove('d-none');
     document.getElementById("recipientName").textContent = withUser;
@@ -83,8 +88,65 @@ async function getMessages(chatId, subject, withUser) {
     }
 
 }
+document.getElementById("submit").addEventListener('click', async e => {
+    const res = await fetch(`/api/chat/sendMessage`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            message: document.getElementById("messageInput").value,
+            chatId: document.getElementById('chatIdInput').value
+        })
+    })
+    if (res.ok) {
+        await reloadMessages();
+    } else {
+        console.error('Error sending message:', res.status);
+    }
+})
+async function reloadMessages() {
+    if (!currentChatId) return;
+
+    const response = await fetch(`/api/chat/getChat/${currentChatId}`);
+    const messagesArea = document.getElementById('messagesArea');
+
+    if (!response.ok) return;
+
+    const data = await response.json();
+    messagesArea.innerHTML = '';
+
+    if (data.length === 0) {
+        messagesArea.innerHTML = '<p class="text-center text-muted mt-5">Start the conversation!</p>';
+        return;
+    }
+
+    data.forEach(msg => {
+        const isUser = msg.speaker === 'You';
+        const wrapper = document.createElement('div');
+        wrapper.className = `d-flex mb-2 ${isUser ? 'justify-content-end' : 'justify-content-start'}`;
+
+        const bubble = document.createElement('div');
+        bubble.className = 'p-2 rounded-3 text-break shadow-sm';
+
+        if (isUser) {
+            bubble.classList.add('bg-primary', 'text-white');
+        } else {
+            bubble.classList.add('bg-light', 'text-dark', 'border');
+            bubble.innerHTML = `<small class="text-muted d-block">${msg.speaker}</small>`;
+        }
+
+        bubble.innerHTML += `<p class="mb-0">${msg.message}</p>`;
+        wrapper.appendChild(bubble);
+        messagesArea.appendChild(wrapper);
+    });
+
+    messagesArea.scrollTop = messagesArea.scrollHeight;
+}
 document.addEventListener('DOMContentLoaded', loadChats);
 (function(){
-    //refresh every 1 second
+    //refresh every 5 second
     setInterval(loadChats, 5000);
+    //refresh every 1 second
+    setInterval(reloadMessages(), 1000);
 })();
