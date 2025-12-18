@@ -47,4 +47,3 @@ app.listen(PORT, () => {
     runScheduledCleanup();
     setInterval(runScheduledCleanup, 60 * 60 * 1000);
 });
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
