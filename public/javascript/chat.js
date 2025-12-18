@@ -148,5 +148,5 @@ document.addEventListener('DOMContentLoaded', loadChats);
     //refresh every 5 second
     setInterval(loadChats, 5000);
     //refresh every 1 second
-    setInterval(reloadMessages(), 1000);
+    setInterval(reloadMessages, 1000);
 })();
