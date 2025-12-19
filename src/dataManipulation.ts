@@ -8,7 +8,7 @@ import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { settleAuction } from './auctionService.js';
-import {establishChat} from "./chat.ts";
+import {establishChat} from "./chat.js";
 
 const { Router } = expressPkg;
 const dataRouter = Router();
