@@ -22,8 +22,7 @@ export async function connectDB() {
 
     await client.connect();
     
-    // 假設你的資料庫名稱是 'BidSharkDB' (請替換成你的真實 DB 名稱)
-    const db = client.db('BidSharkDB'); 
+    const db = client.db('BidShark'); 
 
     // 3. 儲存到變數中以便下次使用
     cachedClient = client;
