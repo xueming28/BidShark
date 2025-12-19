@@ -1,12 +1,12 @@
 import express from 'express';
 import * as path from 'path';
 import bodyParser from 'body-parser';
-import mainRouter from './Router.ts';
+import mainRouter from './Router.js';
 import session from "express-session";
 import MongoStore from "connect-mongo";
-import {client} from "./ConnectToDB.ts";
+import {client} from "./ConnectToDB.js";
 import { fileURLToPath } from 'url';
-import { runScheduledCleanup } from './auctionService.ts';
+import { runScheduledCleanup } from './auctionService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

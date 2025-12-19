@@ -1,13 +1,13 @@
 import type { Request, Response } from 'express';
 import expressPkg from 'express';
-import { connectDB } from './ConnectToDB.ts';
+import { connectDB } from './ConnectToDB.js';
 import fs from 'fs';
 import bcrypt from 'bcrypt';
 import { ObjectId } from "mongodb";
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { settleAuction } from './auctionService.ts';
+import { settleAuction } from './auctionService.js';
 import {establishChat} from "./chat.ts";
 
 const { Router } = expressPkg;

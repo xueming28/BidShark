@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import loginRouter from './userOperation.ts';
-import sessionInfo from './getSessionInfo.ts';
-import dataRouter from "./dataManipulation.ts";
-import DBreader from "./getDBdata.ts";
-import chatRouter from "./chat.ts";
-import { getCartItems, checkout } from './cartService.ts'; 
-import { runScheduledCleanup } from './auctionService.ts';
+import loginRouter from './userOperation.js';
+import sessionInfo from './getSessionInfo.js';
+import dataRouter from "./dataManipulation.js";
+import DBreader from "./getDBdata.js";
+import chatRouter from "./chat.js";
+import { getCartItems, checkout } from './cartService.js'; 
+import { runScheduledCleanup } from './auctionService.js';
 const mainRouter = Router();
 
 mainRouter.use('/data', dataRouter);

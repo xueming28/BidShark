@@ -1,4 +1,4 @@
-import { connectDB } from './ConnectToDB.ts';
+import { connectDB } from './ConnectToDB.js';
 import { ObjectId } from 'mongodb';
 
 const CART_COLLECTION = 'cart';
