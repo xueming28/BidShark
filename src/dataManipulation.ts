@@ -12,25 +12,6 @@ import { establishChat } from "./chat.js"; // 確保是 .js
 const { Router } = expressPkg;
 const dataRouter = Router();
 
-// ==========================================
-// 1. 移除建立資料夾的程式碼 (Vercel 唯讀修正)
-// ==========================================
-/* 
-   在 Vercel 上，這段會導致崩潰 (ENOENT: no such file or directory)，
-   因為 Serverless Function 沒有權限寫入硬碟。
-   既然你是存 Base64 到 MongoDB，這段完全不需要。
-*/
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
-// const uploadDir = path.join(__dirname, '../public/uploads');
-// if (!fs.existsSync(uploadDir)) {
-//     fs.mkdirSync(uploadDir, { recursive: true });
-// }
-
-// ==========================================
-// 2. Multer 設定 (保持 memoryStorage)
-// ==========================================
-// 使用記憶體儲存，檔案會以 Buffer 形式存在 req.files 中
 const storage = multer.memoryStorage();
 
 const upload = multer({
