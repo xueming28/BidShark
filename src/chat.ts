@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 import expressPkg from 'express';
-import { connectDB } from './ConnectToDB.ts';
+import { connectDB } from './ConnectToDB.js';
 import {ObjectId} from "mongodb";
 
 const { Router } = expressPkg;

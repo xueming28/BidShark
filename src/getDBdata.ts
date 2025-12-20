@@ -1,6 +1,6 @@
 import expressPkg from "express";
 import { ObjectId } from "mongodb";
-import { connectDB } from './ConnectToDB.ts';
+import { connectDB } from './ConnectToDB.js';
 import session from "express-session";
 const { Router } = expressPkg;
 const DBreader = Router();

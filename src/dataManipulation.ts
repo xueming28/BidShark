@@ -1,40 +1,26 @@
 import type { Request, Response } from 'express';
 import expressPkg from 'express';
-import { connectDB } from './ConnectToDB.ts';
-import fs from 'fs';
-import bcrypt from 'bcrypt';
+import { connectDB } from './ConnectToDB.js'; 
 import { ObjectId } from "mongodb";
 import multer from 'multer';
 import path from 'path';
-import { fileURLToPath } from 'url';
-import { settleAuction } from './auctionService.ts';
-import {establishChat} from "./chat.ts";
+import { settleAuction } from './auctionService.js'; 
+import { establishChat } from "./chat.js"; 
 
 const { Router } = expressPkg;
 const dataRouter = Router();
 
-// 處理 ESM 環境下的 __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// 確保上傳目錄存在
-const uploadDir = path.join(__dirname, '../public/uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Multer 設定：儲存圖片
 const storage = multer.memoryStorage();
 
 const upload = multer({
     storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB per file
+    limits: { fileSize: 4.5 * 1024 * 1024 }, // Vercel 請求限制約 4.5MB，建議調低一點以免爆掉
     fileFilter: (req, file, cb) => {
         const allowed = /jpeg|jpg|png|gif|webp/;
         const pass = allowed.test(file.mimetype) && allowed.test(path.extname(file.originalname).toLowerCase());
         cb(null, pass);
     }
-}).array('itemImage', 5); // 最多 5 張圖片
+}).array('itemImage', 5);
 
 // 更新個人資料
 dataRouter.post('/updateUserInfo', async (req: Request, res: Response) => {
@@ -94,13 +80,18 @@ dataRouter.post('/auctions/create', (req: Request, res: Response) => {
             }
 
             const files = req.files as Express.Multer.File[];
-            // store as data URLs (data:<mime>;base64,<base64string>) so images come from DB directly
+            
+            // 將 Buffer 轉為 Base64 字串存入 DB
             const images = files?.map(file => `data:${file.mimetype};base64,${file.buffer.toString('base64')}`) || [];
-            //const images = files?.map(file => `/uploads/${file.filename}`) || [];
 
             if (images.length === 0) {
                 return res.status(400).json({ success: false, message: 'At least one image is required' });
             }
+
+            // ★ 強烈建議：檢查總 payload 大小
+            // 如果 JSON 字串超過 4.5MB，Vercel 會直接回傳 413 Payload Too Large
+            // 這裡可以簡單做個檢查，雖然這時候已經上傳進來了，但可以避免寫入 DB 失敗
+
             let result = null;
             if(req.body.mode === 'true'){
                 const {
@@ -174,60 +165,46 @@ dataRouter.post('/auctions/create', (req: Request, res: Response) => {
 });
 
 // 首頁：取得所有進行中的拍賣品
-// ==============================
-// GET ALL AUCTIONS (WITH FILTER)
-// ==============================
 dataRouter.get('/auctions', async (req: Request, res: Response) => {
     try {
         const db = await connectDB();
         
-        // 1. 讀取前端傳來的參數
         const { category, minPrice, maxPrice, type, search } = req.query;
 
-        // 2. 建立基礎查詢條件
         const query: any = { status: 'active' };
 
-        // 3. 分類篩選 (Category)
         if (category && typeof category === 'string' && category !== 'all') {
-            // 使用正則表達式進行不分大小寫的匹配，或者直接匹配
             query.category = category; 
         }
 
-        // 4. 關鍵字搜尋 (Search) - 如果前端透過參數傳搜尋字
         if (search && typeof search === 'string') {
             query.title = { $regex: search, $options: 'i' };
         }
 
-        // 5. 類型篩選 (Auction vs Direct Sale)
         if (type === 'auction') {
             query.dSale = false;
         } else if (type === 'direct') {
             query.dSale = true;
         }
 
-        // 6. 價格範圍篩選 (Price Range)
-        // 難點：直購看 'price'，拍賣看 'currentPrice'
         const min = minPrice ? Number(minPrice) : 0;
         const max = maxPrice ? Number(maxPrice) : Number.MAX_SAFE_INTEGER;
 
         if (minPrice || maxPrice) {
-            // 使用 $and 結合 $or 來處理兩種不同的價格欄位
             query.$and = [
                 {
                     $or: [
-                        // 情境 A: 直購商品，檢查 price
                         { dSale: true, price: { $gte: min, $lte: max } },
-                        // 情境 B: 拍賣商品，檢查 currentPrice
                         { dSale: false, currentPrice: { $gte: min, $lte: max } }
                     ]
                 }
             ];
         }
 
-        // 執行查詢
         const items = await db.collection('auctionItems')
             .find(query)
             .sort({ createdAt: -1 })
+            .limit(20) // ★ 新增：限制回傳筆數，避免 Vercel Response Payload 超過 4.5MB
             .toArray();
 
         const now = new Date();
@@ -235,26 +212,26 @@ dataRouter.get('/auctions', async (req: Request, res: Response) => {
         const formatted = items.map(item => {
             if (item.dSale) {
                 if(item.stock <= 0){
-                    // (原有的庫存檢查邏輯)
                     db.collection('auctionItems').updateOne({_id: item._id},{$set: { status: 'inactive' }});
-                    return null; // 標記為 null 稍後過濾
+                    return null; 
                 }
                 return{
                     dSale: true,
                     _id: item._id.toString(),
                     title: item.title,
                     price: item.price,
+                    // 為了避免傳輸量過大，可以考慮只回傳第一張圖
                     image: item.images?.[0] || '/Image/default-item.jpg',
                     stock: item.stock || 'err'
                 }
             }
-            // 拍賣邏輯
+            
             const remainingMs = new Date(item.endTime).getTime() - now.getTime();
             let timeLeft = '';
 
             if (remainingMs <= 0) {
-                settleAuction(item._id.toString()); // 觸發結算
-                return null; // 過期商品不回傳
+                settleAuction(item._id.toString());
+                return null;
             } else {
                 const days = Math.floor(remainingMs / 86400000);
                 const hours = Math.floor((remainingMs % 86400000) / 3600000);
@@ -267,12 +244,12 @@ dataRouter.get('/auctions', async (req: Request, res: Response) => {
                 dSale: false,
                 _id: item._id.toString(),
                 title: item.title,
-                price: item.currentPrice, // 注意這裡用 currentPrice
+                price: item.currentPrice,
                 image: item.images?.[0] || '/Image/default-item.jpg',
                 timeLeft,
                 endTime: item.endTime
             };
-        }).filter(item => item !== null); // 過濾掉剛才標記為 null 的過期/缺貨商品
+        }).filter(item => item !== null);
 
         res.json({ success: true, items: formatted });
     } catch (error) {
@@ -282,14 +259,11 @@ dataRouter.get('/auctions', async (req: Request, res: Response) => {
 });
 
 
-// ==============================
 // GET SINGLE AUCTION DETAILS
-// ==============================
 dataRouter.get('/auctions/:id', async (req: Request, res: Response) => {
     try {
         const db = await connectDB();
 
-        // Validate product ID
         if (!ObjectId.isValid(req.params.id)) {
             return res.status(400).json({ success: false, msg: "Invalid auction ID" });
         }
@@ -303,9 +277,6 @@ dataRouter.get('/auctions/:id', async (req: Request, res: Response) => {
             return res.status(404).json({ success: false, message: 'Auction not found or has ended' });
         }
 
-        // ============================
-        // SAFE SELLER LOOKUP (IMPORTANT)
-        // ============================
         let seller = null;
 
         if (item.sellerId && ObjectId.isValid(item.sellerId.toString())) {
@@ -369,7 +340,6 @@ dataRouter.post('/auctions/:id/bid', async (req: Request, res: Response) => {
     try {
         const db = await connectDB();
 
-        // 1. 取得最新商品狀態
         const item = await db.collection('auctionItems').findOne({
             _id: new ObjectId(req.params.id),
             status: 'active'
@@ -379,7 +349,6 @@ dataRouter.post('/auctions/:id/bid', async (req: Request, res: Response) => {
             return res.json({ success: false, message: 'Auction not found or has ended' });
         }
 
-        // 2. 手動檢查出價是否足夠高
         if (bidAmount <= item.currentPrice) {
             return res.json({
                 success: false,
@@ -388,7 +357,6 @@ dataRouter.post('/auctions/:id/bid', async (req: Request, res: Response) => {
             });
         }
 
-        // 3. 更新資料庫
         await db.collection('auctionItems').updateOne(
             { _id: item._id },
             {
@@ -449,8 +417,6 @@ dataRouter.get('/myItems', async (req: Request, res: Response) => {
         const formatted = items.map(item => {
             const isDirect = !!item.dSale;
             const image = item.images?.[0] || '/Image/default-item.jpg';
-            //const rawImage = item.images && item.images[0] ? item.images[0] : null;
-            //const image = rawImage ? (rawImage.startsWith('/') ? rawImage : `/uploads/${rawImage}`) : '/Image/default-item.jpg';
             
             let timeLeft = '';
             if (!isDirect && item.endTime) {
@@ -516,7 +482,6 @@ dataRouter.get('/auctions/:id/edit', async (req: Request, res: Response) => {
 });
 
 dataRouter.post('/auctions/:id/edit', (req: Request, res: Response) => {
-    // reuse multer memoryStorage upload (already defined above)
     upload(req, res, async (err) => {
         if (err) {
             console.error('Upload error:', err);
@@ -540,16 +505,13 @@ dataRouter.post('/auctions/:id/edit', (req: Request, res: Response) => {
             const bidsCount = Array.isArray(item.bids) ? item.bids.length : 0;
             const files = req.files as Express.Multer.File[] || [];
 
-            // convert uploaded files into data URLs (same convention as create)
             const newImages = files.map(f => `data:${f.mimetype};base64,${f.buffer.toString('base64')}`);
 
             const updates: any = {};
             const pushOps: any = {};
 
             if (bidsCount > 0) {
-                // only description and append images allowed
                 if (req.body.title || req.body.price || req.body.startPrice || req.body.stock || req.body.extendDays) {
-                    // ignore or reject changes to forbidden fields
                     return res.status(400).json({ success: false, message: 'Item already has bids — only description update and adding photos allowed' });
                 }
 
@@ -558,28 +520,23 @@ dataRouter.post('/auctions/:id/edit', (req: Request, res: Response) => {
                 }
 
                 if (newImages.length > 0) {
-                    // append images (do NOT remove existing)
                     pushOps.images = newImages;
                 }
             } else {
-                // no bids yet — allow more fields
                 if (req.body.title) updates.title = req.body.title.trim();
                 if (req.body.description) updates.description = req.body.description.trim();
 
                 if (item.dSale) {
-                    // direct sale: allow price & stock
                     if (req.body.price) updates.price = Number(req.body.price);
                     if (req.body.stock) updates.stock = Number(req.body.stock);
                 } else {
-                    // auction: allow startPrice (only if lower than current? since no bids currentPrice==startPrice)
                     if (req.body.startPrice) {
                         const sp = Number(req.body.startPrice);
                         if (isNaN(sp) || sp <= 0) return res.status(400).json({ success: false, message: 'Invalid startPrice' });
                         updates.startPrice = sp;
-                        updates.currentPrice = sp; // keep currentPrice in sync when no bids yet
+                        updates.currentPrice = sp; 
                     }
 
-                    // duration extension: client may send extendDays
                     if (req.body.extendDays) {
                         const extendDays = parseInt(String(req.body.extendDays), 10);
                         if (isNaN(extendDays) || extendDays <= 0) {
@@ -598,13 +555,11 @@ dataRouter.post('/auctions/:id/edit', (req: Request, res: Response) => {
                     }
                 }
 
-                // images: if new images provided, replace existing images with new set
                 if (newImages.length > 0) {
                     updates.images = newImages;
                 }
             }
 
-            // build final update object
             const finalUpdate: any = {};
             if (Object.keys(updates).length > 0) finalUpdate.$set = updates;
             if (pushOps.images) finalUpdate.$push = { images: { $each: pushOps.images } };
@@ -615,7 +570,6 @@ dataRouter.post('/auctions/:id/edit', (req: Request, res: Response) => {
 
             await db.collection('auctionItems').updateOne({ _id: item._id }, finalUpdate);
 
-            // return updated item snapshot
             const updated = await db.collection('auctionItems').findOne({ _id: item._id });
             res.json({
                 success: true,
