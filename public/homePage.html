@@ -5,8 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>海大拍賣系統 - 首頁</title>
     <link rel="stylesheet" href="css/homePage.css">
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark-mode');
+            }
+        })();
+    </script>
 </head>
 <body>
+    <script>
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
 
     <div id="sidebar"></div>
     <div class="main-content">
@@ -14,7 +28,7 @@
         <div class="top-menu">
             <input class="search-bar" type="text" placeholder="Search...">
             <button class="search-button">Search</button>
-            <button id = "login" class="login-btn" onclick="window.location.href='login.html'">Login</button>
+            <button id="login" class="login-btn" onclick="window.location.href='login.html'">Login</button>
         </div>
 
         <!-- Recommended 區塊 -->
@@ -32,6 +46,6 @@
             </div>
         </div>
     </div>
-    <script type="module" src = "javascript/homePage.js"></script>
+    <script type="module" src="javascript/homePage.js"></script>
 </body>
 </html>

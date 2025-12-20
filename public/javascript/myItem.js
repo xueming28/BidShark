@@ -63,18 +63,51 @@ async function loadMyItems() {
             card.classList.add('item-card');
             const imgSrc = item.image || '/Image/default-item.jpg';
 
+            // === 1. 狀態翻譯邏輯 ===
+            let statusLabel = item.status;
+            let statusClass = 'status-default';
+
+            switch (item.status) {
+                case 'active':
+                    statusLabel = 'Active';
+                    statusClass = 'status-active';
+                    break;
+                case 'inactive':
+                    statusLabel = 'Ended'; 
+                    statusClass = 'status-sold';
+                    break;
+                case 'unsold':
+                    statusLabel = 'Unsold';
+                    statusClass = 'status-fail';
+                    break;
+                case 'unsold_reserve_not_met':
+                    statusLabel = 'Reserve Not Met';
+                    statusClass = 'status-fail';
+                    break;
+                default:
+                    statusLabel = escapeHtml(item.status);
+            }
+
             card.innerHTML = `
                 <div class="item-content">
                     <div class="item-image-wrap">
                         <img src="${imgSrc}" alt="${escapeHtml(item.title)}" class="item-img"/>
                     </div>
+                    
                     <div class="item-details">
                         <div class="item-name">${escapeHtml(item.title)}</div>
+                        
+                        <!-- Metadata 區塊：標籤 + 狀態文字 -->
                         <div class="item-meta">
-                            ${item.dSale ? `<span class="badge">Direct Sale</span>` : `<span class="badge auction">Auction</span>`}
-                            <span class="item-status">${escapeHtml(item.status || '')}</span>
+                            ${item.dSale 
+                                ? `<span class="badge badge-direct">Direct</span>` 
+                                : `<span class="badge badge-auction">Auction</span>`
+                            }
+                            <!-- 顯示翻譯後的狀態文字 -->
+                            <span class="status-text ${statusClass}">${statusLabel}</span>
                         </div>
                     </div>
+
                     <div class="item-actions">
                         <div class="item-price">NTD ${Number(item.price).toLocaleString()}</div>
                         <div class="item-time">${item.dSale ? `Stock: ${item.stock ?? 0}` : (item.timeLeft || '')}</div>

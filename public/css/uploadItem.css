@@ -160,6 +160,50 @@ body {
     color: #999;
 }
 
+input[type="text"],
+input[type="number"],
+input[type="password"],
+input[type="date"],
+input[type="datetime-local"],
+textarea,
+select {
+    background-color: var(--card-bg) !important;
+
+    color: var(--text-color) !important;
+
+    border: 1px solid var(--border-color) !important;
+
+    border-radius: 6px;
+    padding: 10px;
+}
+
+
+::placeholder {
+    color: #999 !important;
+    opacity: 1;
+}
+
+
+input:focus,
+textarea:focus,
+select:focus {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+    border-color: #007bff !important;
+    /* 聚焦時邊框變藍 */
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+    /* 藍色光暈 */
+}
+
+input:disabled,
+input[readonly] {
+    background-color: var(--bg-color) !important;
+    /* 比卡片更深一點 */
+    color: #666 !important;
+    cursor: not-allowed;
+}
+
 label {
     display: block;
     margin-bottom: 8px;
