@@ -8,8 +8,8 @@
 }
 
 body {
-    background: #f4f4f4;
-    color: #333;
+    background: var(--bg-color);
+    color: var(--text-color);
     display: flex;
     min-height: 100vh;
 }
@@ -21,11 +21,13 @@ body {
     gap: 10px;
     cursor: pointer;
 }
+
 .toggle-container input {
     opacity: 0;
     position: absolute;
 }
-.slider {
+
+.DSslider {
     position: relative;
     width: 50px;
     height: 26px;
@@ -34,7 +36,8 @@ body {
     transition: .3s;
     flex-shrink: 0;
 }
-.slider::before {
+
+.DSslider::before {
     content: "";
     position: absolute;
     height: 22px;
@@ -45,11 +48,12 @@ body {
     border-radius: 50%;
     transition: .3s;
 }
-.toggle-container input:checked + .slider {
+
+.toggle-container input:checked+.DSslider {
     background: #4caf50;
 }
 
-.toggle-container input:checked + .slider::before {
+.toggle-container input:checked+.DSslider::before {
     transform: translateX(24px);
 }
 
@@ -57,6 +61,7 @@ body {
     font-size: 16px;
     line-height: 1;
 }
+
 /* -------------------------
    Main Content Layout
 ------------------------- */
@@ -65,9 +70,11 @@ body {
     flex: 1;
     padding: 40px 80px;
 }
-.main-content.collapsed{
+
+.main-content.collapsed {
     margin-left: 2vw;
 }
+
 .page-header {
     margin-bottom: 30px;
 }
@@ -75,17 +82,17 @@ body {
 .page-title {
     font-size: 32px;
     font-weight: 700;
-    color: #1a1a1a;
+    color: var(--text-color);
 }
 
 /* -------------------------
    Form Container (White Card)
 ------------------------- */
 .add-item-form-container {
-    background: #ffffff;
+    background: var(--sidebar-bg);
     padding: 40px;
     border-radius: 18px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     max-width: 850px;
     margin: 0 auto;
 }
@@ -93,14 +100,70 @@ body {
 /* -------------------------
    Inputs
 ------------------------- */
+/* 容器樣式 */
 .input-group {
-    margin-bottom: 25px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+/* 標籤樣式 */
+.input-group label {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    /* ✅ 確保標籤文字跟隨主題變色 */
+    color: var(--text-color);
+}
+
+/* 下拉選單本體樣式 */
+.input-group select {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    appearance: none;
+    /* 移除瀏覽器預設的醜醜箭頭 */
+
+    /* ✅ 關鍵：使用變數來適應 Dark Mode */
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+
+    /* 自定義箭頭 (使用 SVG 讓它看起來更現代) */
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23999999%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 12px;
+
+    transition: all 0.2s ease;
+}
+
+/* Focus 狀態 (點擊時) */
+.input-group select:focus {
+    outline: none;
+    border-color: #007bff;
+    /* 聚焦時變藍色 */
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* 下拉選單內的選項 (Option) */
+.input-group select option {
+    /* ✅ 確保下拉出來的清單也是黑底白字 */
+    background-color: var(--card-bg);
+    color: var(--text-color);
+}
+
+/* 如果是 disabled 的 placeholder */
+.input-group select option[disabled] {
+    color: #999;
 }
 
 label {
     display: block;
     margin-bottom: 8px;
-    color: #222;
+    color: var(--text-color);
     font-size: 15px;
     font-weight: 600;
 }
@@ -111,11 +174,11 @@ label {
 .add-item-form-container select {
     width: 100%;
     padding: 14px 16px;
-    border: 1px solid #dcdcdc;
+    border: 1px solid var(--border-color);
     border-radius: 10px;
     font-size: 16px;
     outline: none;
-    background: #fafafa;
+    background: var(--bg-color);
     transition: all 0.25s;
 }
 
@@ -127,9 +190,9 @@ label {
 .add-item-form-container input:focus,
 .add-item-form-container textarea:focus,
 .add-item-form-container select:focus {
-    border-color: #000;
-    background: #fff;
-    box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
+    border-color: var(--text-color);
+    background: var(--bg-color);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
 }
 
 /* -------------------------
@@ -138,8 +201,8 @@ label {
 .file-upload-label {
     display: block;
     cursor: pointer;
-    background: #fafafa;
-    border: 2px dashed #d9d9d9;
+    background: var(--bg-color);
+    border: 2px dashed var(--border-color);
     border-radius: 12px;
     padding: 35px;
     text-align: center;
@@ -147,8 +210,8 @@ label {
 }
 
 .file-upload-label:hover {
-    background: #f0f0f0;
-    border-color: #bfbfbf;
+    background: var(--sidebar-bg);
+    border-color: var(--border-color);
 }
 
 #itemImage {
@@ -157,7 +220,7 @@ label {
 
 .upload-text {
     font-size: 15px;
-    color: #666;
+    color: #555;
     margin-top: 10px;
 }
 
@@ -180,8 +243,8 @@ label {
 
 .btn-submit {
     padding: 12px 30px;
-    background: #007bff; 
-    color: white;
+    background: #007bff;
+    color: var(--bg-color);
     border: none;
     border-radius: 10px;
     font-size: 16px;
@@ -197,6 +260,7 @@ label {
 .btn-green {
     background: #28a745;
 }
+
 .btn-green:hover {
     background: #208838;
 }
@@ -204,6 +268,7 @@ label {
 .btn-red {
     background: #dc3545;
 }
+
 .btn-red:hover {
     background: #b92d3a;
 }

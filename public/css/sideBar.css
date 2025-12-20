@@ -1,44 +1,61 @@
 .sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
     width: 240px;
-    background: white;
+    background: var(--bg-color);
     padding: 30px 20px;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
     position: fixed;
     left: 0;
     top: 0;
     height: 100vh;
-    overflow-y: auto;
+    overflow-y: none;
     z-index: 1000
 }
+
 .sidebar.collapsed {
     width: 2vw;
 }
+
+.sidebar-footer {
+    margin-top: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5vh;
+}
+
 .toggle-btn {
     position: fixed;
     left: 1vw;
     bottom: 1vw;
-    background: white;
+    background: transparent;
     cursor: pointer;
     border: none;
     z-index: 2000;
 }
 
 .toggle-btn svg {
+    pointer-events: none;
     width: 35px;
     height: 35px;
 }
+
 .toggle-btn.collapsed {
-    left: 3vw;
+    left: 0vw;
     bottom: 1vw;
 }
-.everything.collapsed{
+
+.everything.collapsed {
     display: none;
 }
+
 .lego {
     font-size: 18px;
     font-weight: 700;
     margin-bottom: 40px;
-    color: #1a1a1a;
+    color: var(--text-color);
 }
 
 .nav-section {
@@ -47,7 +64,7 @@
 
 .nav-title {
     font-size: 12px;
-    color: #999;
+    color: var(--text-color);
     margin-bottom: 15px;
     font-weight: 600;
     text-transform: uppercase;
@@ -62,20 +79,17 @@
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s;
-    color: #666;
+    color: var(--text-color);
     text-decoration: none;
 }
+
 .nav-item.inactive {
     display: none;
 }
-.nav-item:hover {
-    background: #f5f5f5;
-    color: #333;
-}
 
 .nav-item.active {
-    background: #000;
-    color: white;
+    background: var(--bg-color);
+    color: var(--text-color);
     font-weight: 600;
 }
 
@@ -83,4 +97,172 @@
     width: 20px;
     height: 20px;
     margin-right: 12px;
+}
+
+:root {
+    --bg-color: #f5f5f5;
+    --sidebar-bg: #ffffff;
+    --text-color: #333333;
+    --card-bg: #ffffff;
+    --border-color: #e0e0e0;
+}
+
+body.dark-mode {
+    --bg-color: #121212;
+    /* 背景變深灰 */
+    --sidebar-bg: #1e1e1e;
+    /* 側邊欄稍亮一點 */
+    --text-color: #e0e0e0;
+    /* 文字變白 */
+    --card-bg: #2d2d2d;
+    /* 卡片背景 */
+    --border-color: #444444;
+    /* 邊框變深 */
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+    /* 加入過渡動畫 */
+}
+
+/* 側邊欄樣式更新 */
+#sidebar,
+.sidebar {
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+}
+
+.nav-item {
+    color: var(--text-color);
+    text-decoration: none;
+}
+
+.nav-item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--text-color) !important;
+    text-decoration: none !important; 
+}
+
+body.dark-mode .nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-color) !important; 
+}
+
+/* 按鈕樣式 */
+.mode-btn {
+    width: 100%;
+    display: flex;
+    align-items: left;
+    justify-content: left;
+    /* 置中 */
+    gap: 10px;
+    padding: 10px;
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.2s;
+    margin-bottom: 3vh;
+}
+
+.mode-btn:hover {
+    background-color: rgba(128, 128, 128, 0.2);
+}
+
+.item-card {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+}
+
+.item-name,
+.item-price {
+    color: var(--text-color) !important;
+}
+
+
+/* 外層容器 */
+.theme-switch-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+/* 開關本體大小設定 */
+.theme-switch {
+    display: inline-block;
+    height: 34px;
+    position: relative;
+    width: 70px;
+    /* 寬度 */
+}
+
+/* 隱藏預設的 checkbox */
+.theme-switch input {
+    display: none;
+}
+
+/* 滑軌 (背景) */
+.slider {
+    background-color: #2b2b2b;
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s;
+    border-radius: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    border: 1px solid #444;
+}
+
+.slider:before {
+    background-color: #fff;
+    bottom: 4px;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    position: absolute;
+    transition: .4s;
+    border-radius: 50%;
+    z-index: 2;
+}
+
+input:checked+.slider {
+    background-color: #2b2b2b;
+}
+
+input:checked+.slider:before {
+    transform: translateX(36px);
+}
+
+.slider svg {
+    width: 16px;
+    height: 16px;
+    z-index: 1;
+    transition: opacity 0.3s;
+}
+
+/* 太陽圖示 (預設顯示為黃色或白色) */
+.icon-sun {
+    color: #f39c12;
+    /* 橘黃色 */
+}
+
+/* 月亮圖示 (預設白色) */
+.icon-moon {
+    color: #f1c40f;
+    /* 黃色或白色 */
+}
+
+.sidebar.collapsed .theme-switch-wrapper {
+    display: none !important;
 }

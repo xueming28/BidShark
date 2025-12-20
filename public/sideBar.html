@@ -17,7 +17,7 @@
                 </svg>
                 Browse
             </a>
-            <a href="cart.html" id = 'cart' class="nav-item" onclick="window.location.href='cart.html'">
+            <a href="cart.html" id='cart' class="nav-item inactive" onclick="window.location.href='cart.html'">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                     <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -25,19 +25,19 @@
                 </svg>
                 Cart
             </a>
-            <a href="chat.html" id="chat" class="nav-item" onclick="window.location.href='chat.html'">
+            <a href="chat.html" id="chat" class="nav-item inactive" onclick="window.location.href='chat.html'">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                 </svg>
                 Chat
             </a>
-            <a href="myItem.html" id="upload" class="nav-item">
+            <a href="myItem.html" id="upload" class="nav-item inactive">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M12 5v14m7-7H5"></path>
                 </svg>
                 Upload
             </a>
-            <a href="userProfile.html" id="profile" class="nav-item" onclick="window.location.href='userProfile.html'">
+            <a href="userProfile.html" id="profile" class="nav-item inactive" onclick="window.location.href='userProfile.html'">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="8" r="4"></circle>
                     <path d="M4 20c0-4 4-7 8-7s8 3 8 7"></path>
@@ -46,14 +46,42 @@
             </a>
         </div>
     </div>
-    <button id="toggleSidebar" class="toggle-btn">
-        <label id="toggle-icon">
+    <div class="sidebar-footer">
+        <div class="theme-switch-wrapper">
+            <!-- 修正 1: for 必須對應 id="darkModeToggle" -->
+            <label class="theme-switch" for="darkModeToggle">
+                <input type="checkbox" id="darkModeToggle" />
+                <div class="slider round">
+                    <!-- 太陽圖示 -->
+                    <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <!-- 月亮圖示 -->
+                    <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </div>
+            </label>
+        </div>
+
+        <!-- 修正 2: 移除 button 內部的 label -->
+        <button id="toggleSidebar" class="toggle-btn">
             <svg fill="#000000" width="800px" height="800px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
                 version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" transform="matrix(-1,0,0,1,0,0)">
                 <path
                     d="M15.2928932,12 L12.1464466,8.85355339 C11.9511845,8.65829124 11.9511845,8.34170876 12.1464466,8.14644661 C12.3417088,7.95118446 12.6582912,7.95118446 12.8535534,8.14644661 L16.8535534,12.1464466 C17.0488155,12.3417088 17.0488155,12.6582912 16.8535534,12.8535534 L12.8535534,16.8535534 C12.6582912,17.0488155 12.3417088,17.0488155 12.1464466,16.8535534 C11.9511845,16.6582912 11.9511845,16.3417088 12.1464466,16.1464466 L15.2928932,13 L4.5,13 C4.22385763,13 4,12.7761424 4,12.5 C4,12.2238576 4.22385763,12 4.5,12 L15.2928932,12 Z M19,5.5 C19,5.22385763 19.2238576,5 19.5,5 C19.7761424,5 20,5.22385763 20,5.5 L20,19.5 C20,19.7761424 19.7761424,20 19.5,20 C19.2238576,20 19,19.7761424 19,19.5 L19,5.5 Z">
                 </path>
             </svg>
-        </label>
-    </button>
+        </button>
+    </div>
 </div>

@@ -8,21 +8,27 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif;
-    background: #f5f5f5;
+    background: var(--bg-color);
+    color: var(--text-color);
     display: flex;
     min-height: 100vh;
 }
-html, body {
+
+html,
+body {
     height: 100vh;
     margin: 0;
     padding: 0;
     overflow: hidden;
 }
-.main-content{
+
+.main-content {
     margin-left: 240px;
     flex: 1;
+    background-color: var(--bg-color);
 }
-.main-content.collapsed{
+
+.main-content.collapsed {
     margin-left: 2vw;
 }
 
@@ -36,12 +42,12 @@ html, body {
     opacity: 50%;
 
     display: block;
-    position: absolute;  /* 脫離 Grid 排版流 */
-    top: 50%;            /* 垂直位置在 50% */
-    left: 50%;           /* 水平位置在 50% */
-    transform: translate(-50%, -50%); /* 修正自身的寬高偏移，達到完美置中 */
-    margin: 0;           /* 移除原本的 auto */
-    z-index: 10;         /* 確保在最上層 */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    z-index: 10;
 }
 
 @keyframes spin {
@@ -53,25 +59,178 @@ html, body {
         transform: rotate(360deg);
     }
 }
-html, body, .container-fluid, .row {
+
+html,
+body,
+.container-fluid,
+.row {
     height: 100%;
 }
+
 .chat-list-container {
-    height: 100vh; /* Full viewport height */
+    height: 100vh;
     overflow-y: auto;
-    border-right: 1px solid #ccc;
+    border-right: 1px solid var(--border-color);
+    background-color: var(--sidebar-bg);
 }
+
 .chat-messages-container {
     height: 100vh;
     display: flex;
     flex-direction: column;
+    background-color: var(--bg-color);
 }
+
 .message-box {
     flex-grow: 1;
     overflow-y: auto;
     padding: 15px;
 }
-#chatContainer, #messagesArea {
+
+#chatContainer,
+#messagesArea {
     overflow-y: auto;
     flex-grow: 1;
+}
+
+
+/* 1. 聊天列表項目 (左側) */
+.chat-item {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    /* 分隔線變數化 */
+    cursor: pointer;
+    color: var(--text-color);
+    transition: background 0.2s;
+}
+
+.chat-item:hover {
+    background-color: var(--card-bg);
+    /* Hover 時變色 */
+}
+
+.chat-item.active {
+    background-color: #007bff;
+    /* 選中時保持藍色 */
+    color: white;
+}
+
+/* 2. 輸入框與按鈕區 (右側底部) */
+.input-area {
+    padding: 15px;
+    border-top: 1px solid var(--border-color);
+    background-color: var(--sidebar-bg);
+    /* 底部輸入區背景 */
+    display: flex;
+    gap: 10px;
+}
+
+/* 輸入框本體 */
+input[type="text"],
+textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+    color: var(--text-color);
+}
+
+input[type="text"]::placeholder {
+    color: #999;
+}
+
+/* 3. 訊息泡泡 (Message Bubbles) */
+/* 對方傳來的訊息 */
+.message.received {
+    background-color: var(--card-bg);
+    /* 改用卡片背景 (深灰/白) */
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 10px 15px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    max-width: 70%;
+    align-self: flex-start;
+}
+
+/* 我傳送的訊息 (保持藍色，但文字要確保是白色) */
+.message.sent {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    max-width: 70%;
+    align-self: flex-end;
+}
+
+.custom-header {
+    background-color: var(--sidebar-bg) !important;
+    /* 確保不是白色 */
+    color: var(--text-color) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+/* 空狀態背景 (取代 bg-light) */
+.custom-empty-state {
+    background-color: var(--bg-color) !important;
+    color: #999 !important;
+    /* 文字稍微淡一點 */
+}
+
+/* SVG 圖示顏色跟隨文字 */
+.empty-icon {
+    fill: currentColor;
+}
+
+/* 副標題文字 (取代 text-muted) */
+.custom-subtext {
+    color: #999;
+}
+
+/* 修正 Bootstrap form-control 在 Dark Mode 的樣子 */
+.form-control {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+.form-control:focus {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+    border-color: #007bff !important;
+    /* Focus 時維持藍色邊框 */
+    box-shadow: none !important;
+}
+
+.form-control::placeholder {
+    color: #888 !important;
+}
+
+/* 確保列表群組背景正確 */
+.list-group-item {
+    background-color: transparent !important;
+    /* 讓它透出下面的背景 */
+    color: var(--text-color) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+/* Hover 效果 */
+.list-group-item:hover {
+    background-color: var(--card-bg) !important;
+}
+
+/* 選中效果 (bootstrap active class) */
+.list-group-item.active {
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+    color: white !important;
+}
+
+/* 輸入框區域樣式 (確保背景正確) */
+.input-area {
+    background-color: var(--sidebar-bg) !important;
+    padding: 15px;
+    display: flex;
 }
