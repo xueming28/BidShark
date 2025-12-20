@@ -142,9 +142,7 @@ body {
     grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
     gap: 20px;
     position: relative;
-    /* 讓內部的 absolute 元素以這個區塊為基準 */
-    min-height: 50vh;
-    /* 給它至少一半視窗的高度，確保 Spinner 有空間置中 */
+    min-height: 25vh;
 }
 
 .item-card {

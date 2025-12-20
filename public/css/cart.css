@@ -111,6 +111,7 @@ body {
     background: var(--card-bg);
     overflow: hidden;
     margin-bottom: 20px;
+    max-width: 15vw;
 }
 
 .card:hover {
@@ -120,9 +121,10 @@ body {
 
 .card-img-top {
     width: 100%;
-    height: 180px;
     object-fit: cover;
     background-color: var(--border-color);
+    max-height: 13vw;
+    align-self: center;
 }
 
 .card-body {

@@ -8,7 +8,6 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif;
-    /* ✅ 使用變數設定背景與文字 */
     background-color: var(--bg-color); 
     color: var(--text-color);
     display: flex;
@@ -114,7 +113,7 @@ body {
 
 .item-image {
     width: 100%;
-    height: 200px;
+    height: 25vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -122,9 +121,6 @@ body {
     font-weight: 600;
     color: white; 
 }
-
-.item-image.pink { background: linear-gradient(135deg, #ffb6c1, #ffc0cb); }
-.item-image.yellow { background: linear-gradient(135deg, #ffd700, #ffed4e); }
 
 .item-info {
     padding: 16px;
