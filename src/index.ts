@@ -1,18 +1,18 @@
 import express from 'express';
 import * as path from 'path';
 import bodyParser from 'body-parser';
-import mainRouter from './Router.ts';
+import mainRouter from './Router.js';
 import session from "express-session";
 import MongoStore from "connect-mongo";
-import {client} from "./ConnectToDB.ts";
+import {client} from "./ConnectToDB.js";
 import { fileURLToPath } from 'url';
-import { runScheduledCleanup } from './auctionService.ts';
+import { runScheduledCleanup } from './auctionService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
@@ -42,8 +42,10 @@ app.use(
 );
 
 app.use('/api', mainRouter);
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-    runScheduledCleanup();
-    setInterval(runScheduledCleanup, 60 * 60 * 1000);
-});
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`Server is running on http://localhost:${PORT}`);
+    });
+}
+
+export default app;
