@@ -107,13 +107,15 @@ document.getElementById("submit").addEventListener('click', async e => {
 })
 async function reloadMessages() {
     if (!currentChatId) return;
-
+    const ChatIdChecker = currentChatId;
     const response = await fetch(`/api/chat/getChat/${currentChatId}`);
     const messagesArea = document.getElementById('messagesArea');
 
     if (!response.ok) return;
 
     const data = await response.json();
+    //prevent race condition
+    if(currentChatId !== ChatIdChecker) return;
     messagesArea.innerHTML = '';
 
     if (data.length === 0) {
