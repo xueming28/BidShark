@@ -88,7 +88,8 @@ async function getMessages(chatId, subject, withUser) {
     }
 
 }
-document.getElementById("submit").addEventListener('click', async e => {
+async function sendMessage() {
+    if(document.getElementById("messageInput").value === '') return;
     const res = await fetch(`/api/chat/sendMessage`, {
         method: 'POST',
         headers: {
@@ -104,13 +105,23 @@ document.getElementById("submit").addEventListener('click', async e => {
     } else {
         console.error('Error sending message:', res.status);
     }
+}
+document.getElementById("submit").addEventListener('click', async e => {
+    sendMessage();
 })
+document.getElementById('messageInput').addEventListener('keydown', async e =>{
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        await sendMessage();
+    }
+});
+
 async function reloadMessages() {
     if (!currentChatId) return;
     const ChatIdChecker = currentChatId;
     const response = await fetch(`/api/chat/getChat/${currentChatId}`);
     const messagesArea = document.getElementById('messagesArea');
-
+    const oldScrollPosition = messagesArea.scrollTop;
     if (!response.ok) return;
 
     const data = await response.json();
@@ -142,8 +153,7 @@ async function reloadMessages() {
         wrapper.appendChild(bubble);
         messagesArea.appendChild(wrapper);
     });
-
-    messagesArea.scrollTop = messagesArea.scrollHeight;
+    messagesArea.scrollTop = oldScrollPosition;
 }
 document.addEventListener('DOMContentLoaded', loadChats);
 (function(){

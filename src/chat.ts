@@ -6,13 +6,11 @@ import { ObjectId } from "mongodb";
 const { Router } = expressPkg;
 const chatRouter = Router();
 
-// 建立聊天的函數 (保持不變，但我們會傳入 itemId 作為 subject)
+
 export async function establishChat(userAId:string, userBId:string, subject:string) {
     const db = await connectDB();
     const chatsCollection = db.collection('chat');
     const userCollection = db.collection('Users');
-    
-    // 檢查是否已經存在相同的聊天室 (避免重複建立)
     const existingChat = await chatsCollection.findOne({
         $or: [
             { Aside_id: new ObjectId(userAId), Bside_id: new ObjectId(userBId), subject: new ObjectId(subject) },
