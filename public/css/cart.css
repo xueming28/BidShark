@@ -1,5 +1,15 @@
 @import url('sideBar.css');
 
+/* =========================================
+   1. 修復 Sidebar Hover 出現底線的問題
+   ========================================= */
+/* 強制移除 sidebar 連結的底線，避免被 Bootstrap 等全域樣式覆蓋 */
+.nav-item,
+.nav-item:hover,
+a.nav-item {
+    text-decoration: none !important;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -8,25 +18,26 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif;
-    background: #f5f5f5;
+    background: var(--bg-color);
+    color: var(--text-color);
     display: flex;
     min-height: 100vh;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 /* --- 佈局 Layout --- */
 .main-content {
     margin-left: 240px;
-    /* 配合 Sidebar 寬度 */
     flex: 1;
     padding: 30px 40px;
     position: relative;
-    /* 為了讓 sticky bar 定位 */
 }
-.main-content.collapsed{
+
+.main-content.collapsed {
     margin-left: 2vw;
 }
 
-/* --- 上方搜尋列 Top Menu (保留你原本的樣式) --- */
+/* --- 上方搜尋列 Top Menu --- */
 .top-menu {
     display: flex;
     align-items: center;
@@ -34,23 +45,24 @@ body {
     margin-bottom: 40px;
 }
 
-
 .search-bar {
     flex: 1;
     padding: 16px;
-    border: 1px solid #e0e0e0;
-    background: white;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    color: var(--text-color);
+
     border-radius: 6px;
     transition: all 0.2s;
     font-size: 16px;
     width: 100%;
-    /* 修改為 100% 比較適應響應式 */
 }
 
 .search-button {
     padding: 16px 20px;
-    background: #000;
-    color: white;
+    /* ✅ 反轉配色：黑底白字 -> 文字色底背景色字 */
+    background: var(--text-color);
+    color: var(--bg-color);
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -60,12 +72,13 @@ body {
 }
 
 .search-button:hover {
-    background: #333;
+    opacity: 0.8;
 }
 
 /* --- 標題區域 Header --- */
 .cart-header {
-    background: white;
+    background: var(--card-bg);
+    color: var(--text-color);
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 30px;
@@ -78,26 +91,27 @@ body {
     font-weight: 700;
 }
 
-/* --- 分區標題 Section Title (新增) --- */
+/* --- 分區標題 Section Title --- */
 .section-title {
     font-size: 1.25rem;
     font-weight: 600;
-    color: #444;
+    color: var(--text-color);
     margin: 30px 0 15px 0;
     padding-bottom: 10px;
-    border-bottom: 2px solid #e0e0e0;
+    border-bottom: 2px solid var(--border-color);
+
 }
 
-/* --- 卡片樣式 Card Styles (取代原本的 Table 樣式) --- */
+/* --- 卡片樣式 Card Styles --- */
 .card {
-    border: none !important;
+    border: 1px solid var(--border-color) !important;
     border-radius: 10px !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     transition: transform 0.2s, box-shadow 0.2s;
-    background: white;
+    background: var(--card-bg);
     overflow: hidden;
     margin-bottom: 20px;
-    /* 卡片間距 */
+    max-width: 15vw;
 }
 
 .card:hover {
@@ -107,13 +121,16 @@ body {
 
 .card-img-top {
     width: 100%;
-    height: 180px;
     object-fit: cover;
-    background-color: #f0f0f0;
+    background-color: var(--border-color);
+    max-height: 13vw;
+    align-self: center;
 }
 
 .card-body {
     padding: 15px;
+    color: var(--text-color);
+
 }
 
 .card-title {
@@ -123,19 +140,24 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: var(--text-color);
+
 }
 
 .card-text {
     font-size: 0.95rem;
-    color: #666;
+    color: var(--text-color);
+
+    opacity: 0.7;
     line-height: 1.6;
 }
 
 /* --- 1. 購物車專用樣式 (待付款) --- */
-/* 綠色邊框代表這是「已得標」需要處理的商品 */
 .cart-item-card {
+
     border: 2px solid #28a745 !important;
     position: relative;
+    background: var(--card-bg);
 }
 
 /* 核取方塊 Checkbox */
@@ -146,25 +168,29 @@ body {
     margin-top: 5px;
     cursor: pointer;
     accent-color: #28a745;
-    /* 設定 checkbox 顏色 */
 }
 
-/* --- 2. 結帳列 Checkout Bar (新增 - 置底浮動) --- */
+/* --- 2. 結帳列 Checkout Bar --- */
 .cart-actions {
     position: sticky;
     bottom: 20px;
-    background: white;
+    background: var(--card-bg);
     padding: 15px 25px;
     border-radius: 50px;
-    /* 圓潤造型 */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 1000;
     margin-top: 20px;
-    border: 1px solid #eee;
+    border: 1px solid var(--border-color);
     animation: slideUp 0.3s ease-out;
+}
+
+/* 讓結帳列內的文字也變色 */
+.cart-actions span,
+.cart-actions div {
+    color: var(--text-color);
 }
 
 @keyframes slideUp {
@@ -180,7 +206,8 @@ body {
 }
 
 .price-tag {
-    color: #e74c3c;
+    color: #e74c3c !important;
+    /* 價格維持紅色 */
     font-weight: 800;
     font-size: 1.6rem;
     margin-left: 5px;
@@ -190,23 +217,62 @@ body {
 .countdown {
     font-family: 'Courier New', monospace;
     font-weight: bold;
-    background: #fff0f0;
+    background: rgba(231, 76, 60, 0.1);
     color: #e74c3c;
     padding: 2px 6px;
     border-radius: 4px;
+    border: 1px solid rgba(231, 76, 60, 0.3);
+    /* 增加一點邊框 */
 }
 
 /* --- 4. 空狀態 Empty State --- */
 .empty-msg {
     text-align: center;
     padding: 50px;
-    color: #aaa;
-    font-size: 1.1rem;
-    background: white;
+    color: var(--text-color);
+
+    opacity: 0.6;
+    background: var(--card-bg);
+
     border-radius: 10px;
     width: 100%;
-    border: 1px dashed #ddd;
+    border: 1px dashed var(--border-color);
+
 }
+
+/* 1. 強制針對所有區塊內的卡片應用變數 */
+#cartItems .card,
+#bidItems .card,
+#cart-container .card {
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+
+
+.card-img-top {
+    background-color: var(--card-bg) !important;
+}
+
+.card-body h5,
+.card-body p,
+.card-body small,
+.card-body .text-muted {
+    color: var(--text-color) !important;
+}
+
+
+.bg-light {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+}
+
+.empty-msg {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+    border: 1px dashed var(--border-color) !important;
+}
+
 
 /* --- 響應式調整 --- */
 @media (max-width: 768px) {
@@ -228,6 +294,7 @@ body {
     .cart-actions {
         flex-direction: column;
         gap: 15px;
-        border-radius: 1;
+        border-radius: 15px;
+        /* 手機版圓角稍微小一點 */
     }
 }

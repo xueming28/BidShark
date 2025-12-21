@@ -193,12 +193,12 @@ emailForm.addEventListener('submit', (e) => {
 });
 
 // Google 登入
-// googleBtn.addEventListener('click', () => {
-//     showSuccess('使用Google登入成功！');
-//     setTimeout(() => {
-//         login('google.user@gmail.com');
-//     }, 1000);
-// });
+googleBtn.addEventListener('click', (e) => {
+    e.preventDefault(); // 防止 form submit
+    // 直接讓瀏覽器跳轉到後端的 Google Auth 路由
+    // 後端會負責產生 Google 網址並重導向
+    window.location.href = '/api/auth/google';
+});
 
 // 登入函數
 function login(email) {
