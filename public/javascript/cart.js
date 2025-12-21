@@ -162,63 +162,6 @@ async function performCheckout() {
 // ==========================================
 //  功能 2: 載入競標中商品 (Active Bids)
 // ==========================================
-/*async function loadBids() {
-    const bidContainer = document.getElementById('bidItems');
-    try {
-        const res = await fetch('/api/read/getAllBid');
-        const bids = await res.json();
-        const itemYouBid = [];
-
-        bids.forEach(bid => {
-            const item = bid.auctionItem?.[0];
-            if (!item || item.status === 'inactive') return;
-
-            const existing = itemYouBid.find(i => i._id === item._id);
-            
-            if (Array.isArray(item.images)) {
-                 item.displayImage = item.images[0];
-            } else {
-                 item.displayImage = item.images;
-            }
-
-            if (!existing) {
-                itemYouBid.push({ ...item, yourBid: bid.price });
-            } else {
-                if (item.currentPrice > existing.currentPrice) existing.currentPrice = item.currentPrice;
-                if (bid.price > existing.yourBid) existing.yourBid = bid.price;
-            }
-        });
-
-        if (itemYouBid.length === 0) {
-            bidContainer.innerHTML = '<div class="col-12 empty-msg">目前沒有進行中的競標</div>';
-            return;
-        }
-
-        bidContainer.innerHTML = '';
-        itemYouBid.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'col-md-4 col-sm-6';
-            div.innerHTML = `
-                <div class="card" style="width: 100%;">
-                    <img class="card-img-top" src="${item.displayImage || '/Image/default-item.jpg'}" onerror="this.src='/Image/default-item.jpg'">
-                    <div class="card-body">
-                        <h5 class="card-title">${item.title}</h5>
-                        <p class="card-text">
-                            目前最高: <span style="font-weight:bold;">$${item.currentPrice}</span><br>
-                            你的出價: $${item.yourBid}<br>
-                            剩餘時間: <span class="countdown" data-endtime="${item.endTime}" style="color:red">計算中...</span>
-                        </p>
-                    </div>
-                </div>
-            `;
-            bidContainer.appendChild(div);
-            startCountdown(div, item.endTime);
-        });
-    } catch (e) { 
-        console.error('Load bids failed', e);
-        bidContainer.innerHTML = '<p class="col-12 text-center text-muted">載入失敗</p>';
-    }
-}*/
 async function loadBids() {
     const bidContainer = document.getElementById('bidItems');
     try {
