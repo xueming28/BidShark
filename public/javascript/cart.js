@@ -162,7 +162,7 @@ async function performCheckout() {
 // ==========================================
 //  功能 2: 載入競標中商品 (Active Bids)
 // ==========================================
-async function loadBids() {
+/*async function loadBids() {
     const bidContainer = document.getElementById('bidItems');
     try {
         const res = await fetch('/api/read/getAllBid');
@@ -215,6 +215,89 @@ async function loadBids() {
             startCountdown(div, item.endTime);
         });
     } catch (e) { 
+        console.error('Load bids failed', e);
+        bidContainer.innerHTML = '<p class="col-12 text-center text-muted">載入失敗</p>';
+    }
+}*/
+async function loadBids() {
+    const bidContainer = document.getElementById('bidItems');
+    try {
+        const [resBids, resSession] = await Promise.all([
+            fetch('/api/read/getAllBid'),
+            fetch('/api/info/session', { method: 'POST', credentials: 'include' })
+        ]);
+
+        if(!resBids.ok) throw new Error('Failed to load bids');
+        const bids = await resBids.json();
+        const session = resSession.ok ? await resSession.json() : null;
+        const myUserId = session?.id ? String(session.id) : null;
+
+        // Map by item id to aggregate per-item data and preserve "yourBid" only for current user
+        const itemMap = new Map();
+
+        for (const bid of bids) {
+            const item = bid.auctionItem?.[0];
+            if (!item || item.status === 'inactive') continue;
+
+            const itemId = String(item._id);
+            let entry = itemMap.get(itemId);
+            if (!entry) {
+                entry = {
+                    ...item,
+                    displayImage: Array.isArray(item.images) ? item.images[0] : item.images,
+                    currentPrice: Number(item.currentPrice ?? item.startPrice ?? 0),
+                    yourBid: null
+                };
+            }
+
+            let bidderId = null;
+            if (bid.bidderId) bidderId = bid.bidderId._id ?? bid.bidderId;
+            else if (bid.userId) bidderId = bid.userId._id ?? bid.userId;
+            else if (bid.bidder) bidderId = bid.bidder._id ?? bid.bidder;
+            bidderId = bidderId != null ? String(bidderId) : null;
+            
+            // Update authoritative current price from item (server source)
+            if (Number(item.currentPrice) > Number(entry.currentPrice)) {
+                entry.currentPrice = item.currentPrice;
+            }
+
+            // only mark yourBid for bids that belong to current session user
+            if (myUserId && bidderId === myUserId) {
+                const bidPrice = Number(bid.price ?? 0);
+                entry.yourBid = Math.max(entry.yourBid || 0, bidPrice);
+            }
+
+            itemMap.set(itemId, entry);
+        }
+
+        const itemYouBid = Array.from(itemMap.values()).filter(e => e.yourBid !== null);
+
+        if (itemYouBid.length === 0) {
+            bidContainer.innerHTML = '<div class="col-12 empty-msg">目前沒有進行中的競標</div>';
+            return;
+        }
+
+        bidContainer.innerHTML = '';
+        itemYouBid.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'col-md-4 col-sm-6';
+            div.innerHTML = `
+                <div class="card" style="width: 100%;">
+                    <img class="card-img-top" src="${item.displayImage || '/Image/default-item.jpg'}" onerror="this.src='/Image/default-item.jpg'">
+                    <div class="card-body">
+                        <h5 class="card-title">${item.title}</h5>
+                        <p class="card-text">
+                            目前最高: <span style="font-weight:bold;">$${item.currentPrice}</span><br>
+                            你的出價: <span style="font-weight:bold;">$${item.yourBid ?? 0}</span><br>
+                            剩餘時間: <span class="countdown" data-endtime="${item.endTime}" style="color:red">計算中...</span>
+                        </p>
+                    </div>
+                </div>
+            `;
+            bidContainer.appendChild(div);
+            startCountdown(div, item.endTime);
+        });
+    } catch (e) {
         console.error('Load bids failed', e);
         bidContainer.innerHTML = '<p class="col-12 text-center text-muted">載入失敗</p>';
     }

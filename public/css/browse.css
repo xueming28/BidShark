@@ -32,14 +32,20 @@ body {
 
 .search-bar {
     flex: 1;
-    /* FIX: Make it fill space instead of 200% */
     padding: 16px;
+    background: var(--card-bg);
+    color: var(--text-color);
     border: 1px solid var(--border-color);
-    background: var(--bg-color);
     border-radius: 6px;
     transition: all 0.2s;
     font-size: 16px;
 }
+
+.search-bar::placeholder {
+    color: #999;
+}
+
+
 
 .filter-button {
     padding: 16px 20px;

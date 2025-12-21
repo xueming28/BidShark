@@ -4,6 +4,8 @@ import { connectDB } from './ConnectToDB.js';
 import { ObjectId } from 'mongodb';
 import bcrypt from 'bcrypt';
 import { OAuth2Client } from 'google-auth-library'; // 1. 引入 Google 套件
+import fs from 'fs';
+import path from 'path';
 
 const { Router } = expressPkg;
 const loginRouter = Router();
@@ -142,7 +144,12 @@ loginRouter.post('/SignUp', async (req: Request, res: Response) => {
             return res.status(409).json({ error: 'User already exists!' });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-        const img = fs.readFileSync('public/default-profile.svg', { encoding: 'base64' })
+        //const img = fs.readFileSync('public/default-profile.svg', { encoding: 'base64' })
+        const defaultProfilePath = path.join(process.cwd(), 'public', 'default-profile.svg');
+        let img = '';
+        if (fs.existsSync(defaultProfilePath)) {
+            img = fs.readFileSync(defaultProfilePath, { encoding: 'base64' });
+        }
         await users.insertOne({
             email: email,
             password: hashedPassword,
